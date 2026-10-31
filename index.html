@@ -641,8 +641,8 @@ table.quadro td small{color:var(--text-muted); font-weight:400}
 <header class="site-header">
   <div class="wrap">
     <a href="#/" class="brand">
-      <img class="brand-logo brand-logo-light" src="logo-iiss-aldo-moro.png?v=20261031b" alt="IISS Aldo Moro Trani" width="141" height="66">
-      <img class="brand-logo brand-logo-dark" src="logo-iiss-aldo-moro-bianco.png?v=20261031b" alt="" aria-hidden="true" width="141" height="66">
+      <img class="brand-logo brand-logo-light" src="logo-iiss-aldo-moro.png?v=20261031c" alt="IISS Aldo Moro Trani" width="141" height="66">
+      <img class="brand-logo brand-logo-dark" src="logo-iiss-aldo-moro-bianco.png?v=20261031c" alt="" aria-hidden="true" width="141" height="66">
     </a>
     <button class="menu-btn" id="menu-btn" aria-expanded="false" aria-controls="main-nav" onclick="toggleMenu()"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><path d="M4 7h16M4 12h16M4 17h16"/></svg><span>Menu</span></button>
     <nav class="main-nav" id="main-nav">
@@ -1413,8 +1413,8 @@ function quickLinksHtml(){
   </section>`;
 }
 
-function dlManHtml(){ return `<a class="dl-man" href="Manifesto_OpenDays_Laboratori_2026-27.pdf?v=20261031b" target="_blank" rel="noopener" onclick="return dlManifesto(event)">
-      <img src="manifesto-thumb.jpg?v=20261031b" alt="Anteprima del manifesto Open days e laboratori didattici" loading="lazy">
+function dlManHtml(){ return `<a class="dl-man" href="Manifesto_OpenDays_Laboratori_2026-27.pdf?v=20261031c" target="_blank" rel="noopener" onclick="return dlManifesto(event)">
+      <img src="manifesto-thumb.jpg?v=20261031c" alt="Anteprima del manifesto Open days e laboratori didattici" loading="lazy">
       <div><span class="k">Programma 2026/2027</span><h3>Open days e laboratori didattici</h3><p>Scarica il manifesto con tutte le date, da stampare o condividere.</p></div>
       <span class="b"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3v12"/><path d="M7 10l5 5 5-5"/><path d="M5 21h14"/></svg>Scarica PDF</span>
     </a>`; }
@@ -1451,7 +1451,7 @@ function renderHome(){
 
   return `
   <div class="header-banner">
-    <img src="header-banner-serale.jpg?v=20261031b" alt="IISS Aldo Moro, Trani — Orientamento e Iscrizioni a.s. 2027/2028: licei tecnologici (amministrazione, finanza e marketing; turismo) e licei professionali (enogastronomia e ospitalità alberghiera; Made in Italy – Moda; servizi culturali e dello spettacolo – Audiovisivo), Filiera 4+2, Corso serale" width="2131" height="738">
+    <img src="header-banner-serale.jpg?v=20261031c" alt="IISS Aldo Moro, Trani — Orientamento e Iscrizioni a.s. 2027/2028: licei tecnologici (amministrazione, finanza e marketing; turismo) e licei professionali (enogastronomia e ospitalità alberghiera; Made in Italy – Moda; servizi culturali e dello spettacolo – Audiovisivo), Filiera 4+2, Corso serale" width="2131" height="738">
     <a class="hotspot" style="--x:60;--y:531;--w:92;--h:147" href="#/" onclick="return goGroup('ITES')" title="Liceo tecnologico per l'amministrazione, la finanza e il marketing (AFM, SIA, RIM)" aria-label="Liceo tecnologico per l'amministrazione, la finanza e il marketing"></a>
     <a class="hotspot" style="--x:177;--y:531;--w:141;--h:147" href="#/" onclick="return goGroup('IPSEOA')" title="Liceo professionale per l'enogastronomia e l'ospitalità alberghiera" aria-label="Liceo professionale per l'enogastronomia e l'ospitalità alberghiera"></a>
     <a class="hotspot" style="--x:344;--y:531;--w:182;--h:147" href="#/indirizzo/moda" title="Liceo professionale per l'industria e l'artigianato per il Made in Italy · Moda" aria-label="Liceo professionale per il Made in Italy, Moda"></a>
@@ -2352,13 +2352,13 @@ function dlManifesto(ev){
   const btn=ev.currentTarget.querySelector('.b'); const old=btn?btn.innerHTML:'';
   (async()=>{
     const d=await __dl();
-    if(!d){ window.open('Manifesto_OpenDays_Laboratori_2026-27.pdf?v=20261031b','_blank','noopener'); return; }
+    if(!d){ window.open('Manifesto_OpenDays_Laboratori_2026-27.pdf?v=20261031c','_blank','noopener'); return; }
     try{
       if(btn) btn.textContent='Preparazione…';
-      const blob=await fetch('Manifesto_OpenDays_Laboratori_2026-27.pdf?v=20261031b').then(r=>{if(!r.ok)throw new Error();return r.blob();});
+      const blob=await fetch('Manifesto_OpenDays_Laboratori_2026-27.pdf?v=20261031c').then(r=>{if(!r.ok)throw new Error();return r.blob();});
       await d.save({filename:'Manifesto_OpenDays_Laboratori_2026-27.pdf', data:blob});
     }catch(e){
-      if(e&&e.code&&e.code!=='declined'&&e.code!=='rate_limited'){ window.open('Manifesto_OpenDays_Laboratori_2026-27.pdf?v=20261031b','_blank','noopener'); }
+      if(e&&e.code&&e.code!=='declined'&&e.code!=='rate_limited'){ window.open('Manifesto_OpenDays_Laboratori_2026-27.pdf?v=20261031c','_blank','noopener'); }
     }finally{ if(btn) btn.innerHTML=old; }
   })();
   return false;
