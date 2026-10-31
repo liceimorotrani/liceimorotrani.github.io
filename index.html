@@ -1413,8 +1413,8 @@ function quickLinksHtml(){
   </section>`;
 }
 
-function dlManHtml(){ return `<a class="dl-man" href="Manifesto_OpenDays_Laboratori_2026-27.pdf" target="_blank" rel="noopener" onclick="return dlManifesto(event)">
-      <img src="manifesto-thumb.jpg" alt="Anteprima del manifesto Open days e laboratori didattici" loading="lazy">
+function dlManHtml(){ return `<a class="dl-man" href="Manifesto_OpenDays_Laboratori_2026-27.pdf?v=20261031" target="_blank" rel="noopener" onclick="return dlManifesto(event)">
+      <img src="manifesto-thumb.jpg?v=20261031" alt="Anteprima del manifesto Open days e laboratori didattici" loading="lazy">
       <div><span class="k">Programma 2026/2027</span><h3>Open days e laboratori didattici</h3><p>Scarica il manifesto con tutte le date, da stampare o condividere.</p></div>
       <span class="b"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3v12"/><path d="M7 10l5 5 5-5"/><path d="M5 21h14"/></svg>Scarica PDF</span>
     </a>`; }
@@ -2352,13 +2352,13 @@ function dlManifesto(ev){
   const btn=ev.currentTarget.querySelector('.b'); const old=btn?btn.innerHTML:'';
   (async()=>{
     const d=await __dl();
-    if(!d){ window.open('Manifesto_OpenDays_Laboratori_2026-27.pdf','_blank','noopener'); return; }
+    if(!d){ window.open('Manifesto_OpenDays_Laboratori_2026-27.pdf?v=20261031','_blank','noopener'); return; }
     try{
       if(btn) btn.textContent='Preparazione…';
-      const blob=await fetch('Manifesto_OpenDays_Laboratori_2026-27.pdf').then(r=>{if(!r.ok)throw new Error();return r.blob();});
+      const blob=await fetch('Manifesto_OpenDays_Laboratori_2026-27.pdf?v=20261031').then(r=>{if(!r.ok)throw new Error();return r.blob();});
       await d.save({filename:'Manifesto_OpenDays_Laboratori_2026-27.pdf', data:blob});
     }catch(e){
-      if(e&&e.code&&e.code!=='declined'&&e.code!=='rate_limited'){ window.open('Manifesto_OpenDays_Laboratori_2026-27.pdf','_blank','noopener'); }
+      if(e&&e.code&&e.code!=='declined'&&e.code!=='rate_limited'){ window.open('Manifesto_OpenDays_Laboratori_2026-27.pdf?v=20261031','_blank','noopener'); }
     }finally{ if(btn) btn.innerHTML=old; }
   })();
   return false;
