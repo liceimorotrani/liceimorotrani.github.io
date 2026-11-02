@@ -571,6 +571,9 @@ table.quadro tbody tr:nth-child(even) td{background:var(--surface-2)}
 table.quadro tbody tr.hl td{background:var(--accent-soft)}
 table.quadro td small{color:var(--text-muted); font-weight:400}
 .quadro-note{font-size:.76rem; color:var(--text-muted); padding:10px 16px; border-top:1px solid var(--border)}
+.quadro-box{margin-top:18px; display:flex; gap:14px; align-items:flex-start; padding:16px 18px; border-radius:12px; border-left:6px solid; color:var(--navy-900); font-size:.92rem; line-height:1.55}
+.quadro-box p{margin:0}
+.quadro-box-plus{flex:none; display:inline-grid; place-items:center; width:44px; height:44px; border-radius:50%; color:var(--navy-900); font-weight:800; font-size:1.05rem}
 .quadro-empty{margin-top:26px; padding:18px 20px; border-radius:12px; background:var(--surface-2); border:1px solid var(--border); color:var(--text-muted); font-size:.88rem; line-height:1.6}
 .totali-grid{display:grid; grid-template-columns:repeat(auto-fit,minmax(150px,1fr)); gap:10px; margin-top:16px}
 .totale-box{background:var(--surface-2); border:1px solid var(--border); border-radius:10px; padding:10px 14px}
@@ -1056,8 +1059,9 @@ const INDIRIZZI = [
       ['Informatica',[2,2,4,5,5],1],['Economia politica',['-','-',3,2,3],1]
     ]}},
   { slug:'sia-robotica-ai', group:'ITES', parent:'sia', title:'SIA — curvatura Robotica e Intelligenza Artificiale', sede:'Via Gran Bretagna, 1', photos:['hq-sia-robotica-ai-p-1.jpg','hq-sia-robotica-ai-p-2.jpg'],
-    desc:"La curvatura Robotica e Intelligenza Artificiale arricchisce il percorso Sistemi Informativi Aziendali con attività dedicate alla programmazione, alla robotica e ai fondamenti dell'intelligenza artificiale, applicati ai processi aziendali e all'analisi dei dati. Gli studenti imparano a progettare, programmare e utilizzare in modo consapevole le nuove tecnologie, sviluppando competenze sempre più richieste dal mondo del lavoro. Descrizione dettagliata e quadro orario della curvatura saranno pubblicati a breve.",
-    quadroNote:"Il quadro orario della curvatura Robotica e Intelligenza Artificiale sarà pubblicato in questa pagina non appena definito. La curvatura si innesta sul percorso Sistemi Informativi Aziendali: per il quadro orario di base consulta la pagina SIA."
+    desc:"La curvatura Robotica e Intelligenza Artificiale arricchisce il percorso Sistemi Informativi Aziendali con attività dedicate alla programmazione, alla robotica e ai fondamenti dell'intelligenza artificiale, applicati ai processi aziendali e all'analisi dei dati. Gli studenti imparano a progettare, programmare e utilizzare in modo consapevole le nuove tecnologie, sviluppando competenze sempre più richieste dal mondo del lavoro. Ulteriori dettagli sulla curvatura saranno pubblicati a breve.",
+    quadroFrom:'sia',
+    quadroBox:"<b>Curvatura Robotica e Intelligenza Artificiale:</b> al quadro orario del SIA si aggiungono <b>2 ore settimanali di Robotica</b>. Ulteriori dettagli saranno pubblicati in questa pagina non appena definiti."
   },
   { slug:'rim', group:'ITES', title:'Relazioni Internazionali per il Marketing', sede:'Via Gran Bretagna, 1', photos:['hq-rim-p-1.jpg'],
     desc:"Il R.I.M. è un'articolazione del Liceo tecnologico per l'amministrazione, la finanza e il marketing che unisce competenze economico-aziendali a una solida preparazione linguistica e comunicativa. Il percorso sviluppa abilità nelle relazioni internazionali e nel marketing, con particolare attenzione al commercio estero e alle tecniche di comunicazione aziendale in tre lingue, preparando a operare in contesti economici globali.",
@@ -1550,8 +1554,10 @@ function renderIndirizzo(slug){
     quadroHtml = f42Table();
   } else if(item.quadri){
     quadroHtml = item.quadri.map(q=>quadroTable(q, g.accent, g.soft, q.titolo)).join('<div style="height:18px"></div>');
-  } else if(item.quadro){
-    quadroHtml = quadroTable(item.quadro, g.accent, g.soft, null);
+  } else if(item.quadro || item.quadroFrom){
+    const q = item.quadro || (INDIRIZZI.find(i=>i.slug===item.quadroFrom)||{}).quadro;
+    quadroHtml = quadroTable(q, g.accent, g.soft, item.quadroFrom ? 'Quadro orario SIA' : null);
+    if(item.quadroBox) quadroHtml += `<div class="quadro-box" style="border-left-color:${g.accent}; background:${g.soft}"><span class="quadro-box-plus" style="background:${g.accent}">+2</span><p>${item.quadroBox}</p></div>`;
   } else if(item.quadroNote){
     quadroHtml = `<div class="quadro-empty">${item.quadroNote}</div>`;
   }
