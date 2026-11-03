@@ -1,5 +1,7 @@
 <!doctype html><html><head><meta charset=utf8><meta name=viewport content="width=device-width,initial-scale=1,viewport-fit=cover"><style>:root{color-scheme:light;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}html{scroll-padding-top:env(safe-area-inset-top,0px)}body{margin:0;padding:0;font:14px -apple-system,BlinkMacSystemFont,sans-serif;background:#fff;color:#000}img{max-width:100%}[hidden]:not([hidden=until-found i]){display:none!important}.its-video{margin:28px 0 8px; padding:20px; border-radius:16px; background:#fff; border:1px solid rgba(0,42,100,.12); border-top:6px solid var(--g)}
 .its-video h4{margin:4px 0 6px}
+.its-chips{display:flex;flex-wrap:wrap;gap:6px;margin:0 0 10px}
+.its-chip{font-size:.7rem;font-weight:700;padding:3px 9px;border-radius:999px;background:var(--g);color:var(--ink-on-accent,#002A64)}
 .its-video p{margin:0 0 14px; color:var(--navy-900)}
 .its-video-grid{display:grid; grid-template-columns:repeat(auto-fit,minmax(260px,1fr)); gap:16px}
 .its-video-frame{position:relative; aspect-ratio:16/9; border-radius:12px; overflow:hidden; background:#000}
@@ -1788,50 +1790,48 @@ function terziariaHtml(){
 
 function itsHtml(){
   const L = (t,u)=>`<a href="${u}" target="_blank" rel="noopener">${t}${ICONS.external}</a>`;
-  const ITS = [
-    { t:'Economia, marketing e digitale · AFM, SIA, RIM', g:'var(--teal)', puglia:[
-        ['ITS Academy Pu.Ma — Puglia Marketing & Design (amministrazione e finanza, marketing, business management · Andria e Bari)','https://www.itsacademypuma.it/'],
-        ['ITS Academy Apulia Digital — Developer, Cyber Security, AI & Data Science','https://www.apuliadigitalmaker.it/'] ] },
+  const chip = t=>`<span class="its-chip">${t}</span>`;
+  const PARTNER = [
+    { nome:'ITS Academy Puglia Marketing &amp; Design (Pu.Ma)', g:'var(--teal)', per:['AFM','SIA','RIM'],
+      desc:`Percorsi biennali nell'area dei servizi alle imprese. Forma tecnici superiori per il marketing e l'internazionalizzazione delle imprese, per l'amministrazione, la gestione finanziaria e il controllo di gestione, per il business management e per la sostenibilità dei prodotti (design e packaging). Molti docenti vengono dal mondo delle imprese; sono previsti stage in azienda e mobilità Erasmus+.`,
+      sedi:'Andria (sede operativa: Via Lorenzo Bonomo, 49) e Bari',
+      contatti:`tel. <a href="tel:0883592225">0883 592225</a> · <a href="mailto:info@itsacademypuma.it">info@itsacademypuma.it</a>`,
+      links:[['Sito ufficiale','https://www.itsacademypuma.it/'],['Facebook','https://www.facebook.com/itsacademypuma'],['Instagram','https://www.instagram.com/itsacademypuma'],['TikTok','https://vm.tiktok.com/ZN8yMDaWW/'],['LinkedIn','https://www.linkedin.com/school/itsacademypuma'],['Scheda Google (mappa e recensioni)','https://share.google/bKSXi7r5OvawnoM1r']],
+      video:[] },
+    { nome:'ITS Academy Apulia Digital', g:'var(--red)', per:['SIA','Audiovisivo'],
+      desc:`Percorsi biennali nel digitale. Per chi viene da SIA: Developer, Cyber Security, AI &amp; Data Science. Per chi viene dall'Audiovisivo: Digital Video Designer, 2D &amp; 3D Animator, Digital Media Specialist.`,
+      sedi:'Barletta (Via G. Marconi, 39), Bari, Molfetta, Foggia, Brindisi, Lecce, Taranto',
+      contatti:`tel. <a href="tel:0802443600">080 2443600</a> (Bari) · <a href="mailto:orientamento@apuliadigital.it">orientamento@apuliadigital.it</a>`,
+      links:[['Sito ufficiale','https://www.apuliadigitalmaker.it/']],
+      video:['BFwOzuJHCwg','t3W0i73267Q'] }
+  ];
+  const ALTRI = [
     { t:'Turismo e beni culturali', g:'var(--green)', puglia:[
         ['ITS Academy della Puglia per il Turismo, i Beni e le Attività Culturali (Lecce)','https://www.itsturismopuglia.it/'] ] },
     { t:'Enogastronomia e ospitalità alberghiera', g:'var(--orange)', puglia:[
         ['ITS Academy Agroalimentare Puglia — AgriPuglia (Locorotondo)','https://www.itsagroalimentarepuglia.it/'],
         ['ITS Academy Turismo Puglia — ospitalità e accoglienza','https://www.itsturismopuglia.it/'] ] },
-    { t:'Moda', g:'var(--pink)', puglia:[
-        ['ITS Academy MI.TI. Moda — modellista-prototipista, moda sostenibile, marketing moda','https://www.itsmitimoda.it/'] ] },
-    { t:'Cinema e audiovisivo', g:'var(--red)', puglia:[
-        ['ITS Academy Apulia Digital — Digital Video Designer, 2D & 3D Animator, Digital Media Specialist','https://www.apuliadigitalmaker.it/'],
-        ['ITS Academy MI.TI. Moda — modellista per moda, cinema e spettacolo','https://www.itsmitimoda.it/'] ] }
+    { t:'Moda, cinema e spettacolo', g:'var(--pink)', puglia:[
+        ['ITS Academy MI.TI. Moda — modellista-prototipista, moda sostenibile, marketing moda, modellista per cinema e spettacolo','https://www.itsmitimoda.it/'] ] }
   ];
   return `<div class="uni-wrap">
       <p class="uni-intro">Gli ITS Academy sono percorsi biennali post-diploma gratuiti, ad alta specializzazione tecnologica, con molte ore di stage in azienda. Qui trovi le fondazioni ITS della Puglia che offrono corsi vicini ai nostri indirizzi di studio.</p>
-      <div class="uni-groups">${ITS.map(g=>`<div class="uni-group" style="--g:${g.g}">
+      <h3 class="terz-h">Fondazioni ITS in contatto con la nostra scuola</h3>
+      ${PARTNER.map(f=>`<div class="its-video" style="--g:${f.g}">
+        <h4>${f.nome}</h4>
+        <div class="its-chips"><span class="uni-sub" style="margin:0 4px 0 0;align-self:center">Consigliata per</span>${f.per.map(chip).join('')}</div>
+        <p>${f.desc}</p>
+        <p><strong>Sedi:</strong> ${f.sedi}<br><strong>Contatti:</strong> ${f.contatti}</p>
+        <div class="uni-links">${f.links.map(([t,u])=>L(t,u)).join('')}</div>
+        ${f.video.length?`<div class="uni-sub" style="margin-top:16px">Video di presentazione</div>
+        <div class="its-video-grid">${f.video.map((id,i)=>`<div class="its-video-frame"><iframe src="https://www.youtube-nocookie.com/embed/${id}?rel=0" title="${f.nome} – video ${i+1}" loading="lazy" allow="accelerometer; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" allowfullscreen></iframe></div>`).join('')}</div>`:''}
+        <p style="margin:14px 0 0;font-size:.85rem">Materiale informativo cartaceo disponibile al desk orientamento della biblioteca (sede di Via Gran Bretagna, 1).</p>
+      </div>`).join('')}
+      <h3 class="terz-h">Altre fondazioni ITS in Puglia</h3>
+      <div class="uni-groups">${ALTRI.map(g=>`<div class="uni-group" style="--g:${g.g}">
         <h4>${g.t}</h4>
-        ${g.puglia?`<div class="uni-sub">In Puglia</div><div class="uni-links">${g.puglia.map(([t,u])=>L(t,u)).join('')}</div>`:''}
-        ${g.italia?`<div class="uni-sub">Fuori regione</div><div class="uni-links">${g.italia.map(([t,u])=>L(t,u)).join('')}</div>`:''}
+        <div class="uni-sub">In Puglia</div><div class="uni-links">${g.puglia.map(([t,u])=>L(t,u)).join('')}</div>
       </div>`).join('')}</div>
-      <div class="its-video its-puma" style="--g:var(--teal)">
-        <div class="uni-sub">Scheda della fondazione</div>
-        <h4>ITS Academy Puglia Marketing &amp; Design (Pu.Ma)</h4>
-        <p>Percorsi biennali post-diploma nell'area dei servizi alle imprese: forma tecnici superiori per il marketing e l'internazionalizzazione delle imprese, per l'amministrazione, la gestione finanziaria e il controllo di gestione, per il business management e per la sostenibilità dei prodotti (design e packaging). Molti docenti vengono dal mondo delle imprese e sono previsti stage in azienda e mobilità Erasmus+. Indicata in particolare per chi frequenta AFM, SIA e RIM.</p>
-        <p><strong>Sedi:</strong> sede operativa ad Andria, Via Lorenzo Bonomo 49; corsi ad Andria e Bari.<br>
-        <strong>Contatti:</strong> tel. <a href="tel:0883592225">0883 592225</a> · <a href="mailto:info@itsacademypuma.it">info@itsacademypuma.it</a></p>
-        <div class="uni-links">${[
-          ['Sito ufficiale','https://www.itsacademypuma.it/'],
-          ['Facebook','https://www.facebook.com/itsacademypuma'],
-          ['Instagram','https://www.instagram.com/itsacademypuma'],
-          ['TikTok','https://vm.tiktok.com/ZN8yMDaWW/'],
-          ['LinkedIn','https://www.linkedin.com/school/itsacademypuma'],
-          ['Scheda Google (mappa e recensioni)','https://share.google/bKSXi7r5OvawnoM1r']
-        ].map(([t,u])=>L(t,u)).join('')}</div>
-        <p style="margin-top:.6rem">Il volantino dei corsi è disponibile in formato cartaceo al desk orientamento della biblioteca, sede di Via Gran Bretagna.</p>
-      </div>
-      <div class="its-video" style="--g:var(--teal)">
-        <div class="uni-sub">Video di presentazione</div>
-        <h4>ITS Academy Apulia Digital</h4>
-        <p>I video inviati dalla fondazione per presentare i suoi corsi.</p>
-        <div class="its-video-grid">${['BFwOzuJHCwg','t3W0i73267Q'].map((id,i)=>`<div class="its-video-frame"><iframe src="https://www.youtube-nocookie.com/embed/${id}?rel=0" title="ITS Academy Apulia Digital – video ${i+1}" loading="lazy" allow="accelerometer; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" allowfullscreen></iframe></div>`).join('')}</div>
-      </div>
       <p class="uni-note">I collegamenti aprono i siti ufficiali delle fondazioni ITS in una nuova scheda. I corsi attivi cambiano ogni biennio: verifica sempre bandi e sedi aggiornati.</p>
     </div>`;
 }
