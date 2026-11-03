@@ -1790,7 +1790,7 @@ function itsHtml(){
   const L = (t,u)=>`<a href="${u}" target="_blank" rel="noopener">${t}${ICONS.external}</a>`;
   const ITS = [
     { t:'Economia, marketing e digitale · AFM, SIA, RIM', g:'var(--teal)', puglia:[
-        ['ITS Academy PuMa — Puglia Marketing & Design (Business Administration & Finance, Bari)','https://www.itsacademypuma.it/'],
+        ['ITS Academy Pu.Ma — Puglia Marketing & Design (amministrazione e finanza, marketing, business management · Andria e Bari)','https://www.itsacademypuma.it/'],
         ['ITS Academy Apulia Digital — Developer, Cyber Security, AI & Data Science','https://www.apuliadigitalmaker.it/'] ] },
     { t:'Turismo e beni culturali', g:'var(--green)', puglia:[
         ['ITS Academy della Puglia per il Turismo, i Beni e le Attività Culturali (Lecce)','https://www.itsturismopuglia.it/'] ] },
@@ -1810,6 +1810,22 @@ function itsHtml(){
         ${g.puglia?`<div class="uni-sub">In Puglia</div><div class="uni-links">${g.puglia.map(([t,u])=>L(t,u)).join('')}</div>`:''}
         ${g.italia?`<div class="uni-sub">Fuori regione</div><div class="uni-links">${g.italia.map(([t,u])=>L(t,u)).join('')}</div>`:''}
       </div>`).join('')}</div>
+      <div class="its-video its-puma" style="--g:var(--teal)">
+        <div class="uni-sub">Scheda della fondazione</div>
+        <h4>ITS Academy Puglia Marketing &amp; Design (Pu.Ma)</h4>
+        <p>Percorsi biennali post-diploma nell'area dei servizi alle imprese: forma tecnici superiori per il marketing e l'internazionalizzazione delle imprese, per l'amministrazione, la gestione finanziaria e il controllo di gestione, per il business management e per la sostenibilità dei prodotti (design e packaging). Molti docenti vengono dal mondo delle imprese e sono previsti stage in azienda e mobilità Erasmus+. Indicata in particolare per chi frequenta AFM, SIA e RIM.</p>
+        <p><strong>Sedi:</strong> sede operativa ad Andria, Via Lorenzo Bonomo 49; corsi ad Andria e Bari.<br>
+        <strong>Contatti:</strong> tel. <a href="tel:0883592225">0883 592225</a> · <a href="mailto:info@itsacademypuma.it">info@itsacademypuma.it</a></p>
+        <div class="uni-links">${[
+          ['Sito ufficiale','https://www.itsacademypuma.it/'],
+          ['Facebook','https://www.facebook.com/itsacademypuma'],
+          ['Instagram','https://www.instagram.com/itsacademypuma'],
+          ['TikTok','https://vm.tiktok.com/ZN8yMDaWW/'],
+          ['LinkedIn','https://www.linkedin.com/school/itsacademypuma'],
+          ['Scheda Google (mappa e recensioni)','https://share.google/bKSXi7r5OvawnoM1r']
+        ].map(([t,u])=>L(t,u)).join('')}</div>
+        <p style="margin-top:.6rem">Il volantino dei corsi è disponibile in formato cartaceo al desk orientamento della biblioteca, sede di Via Gran Bretagna.</p>
+      </div>
       <div class="its-video" style="--g:var(--teal)">
         <div class="uni-sub">Video di presentazione</div>
         <h4>ITS Academy Apulia Digital</h4>
