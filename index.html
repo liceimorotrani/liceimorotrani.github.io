@@ -1,4 +1,10 @@
-<!doctype html><html><head><meta charset=utf8><meta name=viewport content="width=device-width,initial-scale=1,viewport-fit=cover"><style>:root{color-scheme:light;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}html{scroll-padding-top:env(safe-area-inset-top,0px)}body{margin:0;padding:0;font:14px -apple-system,BlinkMacSystemFont,sans-serif;background:#fff;color:#000}img{max-width:100%}[hidden]:not([hidden=until-found i]){display:none!important}</style></head><body>
+<!doctype html><html><head><meta charset=utf8><meta name=viewport content="width=device-width,initial-scale=1,viewport-fit=cover"><style>:root{color-scheme:light;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}html{scroll-padding-top:env(safe-area-inset-top,0px)}body{margin:0;padding:0;font:14px -apple-system,BlinkMacSystemFont,sans-serif;background:#fff;color:#000}img{max-width:100%}[hidden]:not([hidden=until-found i]){display:none!important}.its-video{margin:28px 0 8px; padding:20px; border-radius:16px; background:#fff; border:1px solid rgba(0,42,100,.12); border-top:6px solid var(--g)}
+.its-video h4{margin:4px 0 6px}
+.its-video p{margin:0 0 14px; color:var(--navy-900)}
+.its-video-grid{display:grid; grid-template-columns:repeat(auto-fit,minmax(260px,1fr)); gap:16px}
+.its-video-frame{position:relative; aspect-ratio:16/9; border-radius:12px; overflow:hidden; background:#000}
+.its-video-frame iframe{position:absolute; inset:0; width:100%; height:100%; border:0}
+</style></head><body>
 <title>Moro Campus Trani</title>
 <link rel="icon" type="image/png" sizes="32x32" href="favicon-32.png">
 <link rel="apple-touch-icon" href="apple-touch-icon.png">
@@ -1804,6 +1810,12 @@ function itsHtml(){
         ${g.puglia?`<div class="uni-sub">In Puglia</div><div class="uni-links">${g.puglia.map(([t,u])=>L(t,u)).join('')}</div>`:''}
         ${g.italia?`<div class="uni-sub">Fuori regione</div><div class="uni-links">${g.italia.map(([t,u])=>L(t,u)).join('')}</div>`:''}
       </div>`).join('')}</div>
+      <div class="its-video" style="--g:var(--teal)">
+        <div class="uni-sub">Video di presentazione</div>
+        <h4>ITS Academy Apulia Digital</h4>
+        <p>I video inviati dalla fondazione per presentare i suoi corsi.</p>
+        <div class="its-video-grid">${['BFwOzuJHCwg','t3W0i73267Q'].map((id,i)=>`<div class="its-video-frame"><iframe src="https://www.youtube-nocookie.com/embed/${id}?rel=0" title="ITS Academy Apulia Digital – video ${i+1}" loading="lazy" allow="accelerometer; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" allowfullscreen></iframe></div>`).join('')}</div>
+      </div>
       <p class="uni-note">I collegamenti aprono i siti ufficiali delle fondazioni ITS in una nuova scheda. I corsi attivi cambiano ogni biennio: verifica sempre bandi e sedi aggiornati.</p>
     </div>`;
 }
