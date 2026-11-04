@@ -86,7 +86,7 @@ button{font-family:inherit; cursor:pointer}
 .site-header .wrap{display:flex; align-items:center; justify-content:space-between; gap:18px; padding-block:10px; flex-wrap:wrap}
 .brand{display:flex; align-items:center; gap:14px; text-decoration:none; color:var(--text)}
 .crest{width:56px; height:56px; flex:none; border-radius:50%}
-.brand-logo{height:66px; width:auto; flex:none; display:block}
+.brand-logo{height:76px; width:auto; flex:none; display:block}
 .brand-logo-dark{display:none}
 @media (prefers-color-scheme:dark){:root:not([data-theme="light"]) .brand-logo-light{display:none} :root:not([data-theme="light"]) .brand-logo-dark{display:block}}
 :root[data-theme="dark"] .brand-logo-light{display:none}
@@ -657,8 +657,8 @@ table.quadro td small{color:var(--text-muted); font-weight:400}
 <header class="site-header">
   <div class="wrap">
     <a href="#/" class="brand">
-      <img class="brand-logo brand-logo-light" src="logo-iiss-aldo-moro.png?v=20261031c" alt="IISS Aldo Moro Trani" width="141" height="66">
-      <img class="brand-logo brand-logo-dark" src="logo-iiss-aldo-moro-bianco.png?v=20261031c" alt="" aria-hidden="true" width="141" height="66">
+      <img class="brand-logo brand-logo-light" src="logo-iiss-aldo-moro.png?v=20261104" alt="Aldo Moro – Licei tecnologici e professionali – Trani" width="129" height="66">
+      <img class="brand-logo brand-logo-dark" src="logo-iiss-aldo-moro-bianco.png?v=20261104" alt="" aria-hidden="true" width="129" height="66">
     </a>
     <button class="menu-btn" id="menu-btn" aria-expanded="false" aria-controls="main-nav" onclick="toggleMenu()"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><path d="M4 7h16M4 12h16M4 17h16"/></svg><span>Menu</span></button>
     <nav class="main-nav" id="main-nav">
@@ -1468,7 +1468,7 @@ function renderHome(){
 
   return `
   <div class="header-banner">
-    <img src="header-banner-serale.jpg?v=20261031c" alt="IISS Aldo Moro, Trani — Orientamento e Iscrizioni a.s. 2027/2028: licei tecnologici (amministrazione, finanza e marketing; turismo) e licei professionali (enogastronomia e ospitalità alberghiera; Made in Italy – Moda; servizi culturali e dello spettacolo – Audiovisivo), Filiera 4+2, Corso serale" width="2131" height="738">
+    <img src="header-banner-serale.jpg?v=20261104" alt="IISS Aldo Moro, Trani — Orientamento e Iscrizioni a.s. 2027/2028: licei tecnologici (amministrazione, finanza e marketing; turismo) e licei professionali (enogastronomia e ospitalità alberghiera; Made in Italy – Moda; servizi culturali e dello spettacolo – Audiovisivo), Filiera 4+2, Corso serale" width="2131" height="738">
     <a class="hotspot" style="--x:60;--y:531;--w:92;--h:147" href="#/" onclick="return goGroup('ITES')" title="Liceo tecnologico per l'amministrazione, la finanza e il marketing (AFM, SIA, RIM)" aria-label="Liceo tecnologico per l'amministrazione, la finanza e il marketing"></a>
     <a class="hotspot" style="--x:177;--y:531;--w:141;--h:147" href="#/" onclick="return goGroup('IPSEOA')" title="Liceo professionale per l'enogastronomia e l'ospitalità alberghiera" aria-label="Liceo professionale per l'enogastronomia e l'ospitalità alberghiera"></a>
     <a class="hotspot" style="--x:344;--y:531;--w:182;--h:147" href="#/indirizzo/moda" title="Liceo professionale per l'industria e l'artigianato per il Made in Italy · Moda" aria-label="Liceo professionale per il Made in Italy, Moda"></a>
