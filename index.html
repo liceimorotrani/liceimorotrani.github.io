@@ -8,6 +8,9 @@
 .its-video-frame iframe{position:absolute; inset:0; width:100%; height:100%; border:0}
 .its-tiktok{display:flex; align-items:center; gap:14px; margin:4px 0 12px; padding:14px 18px; border-radius:14px; background:#000; color:#fff; text-decoration:none; max-width:460px; box-shadow:3px 3px 0 #25F4EE,-3px -3px 0 #FE2C55}
 .its-tiktok:hover{transform:translateY(-1px)}
+.its-info{margin:4px 0 12px; max-width:460px}
+.its-info img{display:block; width:100%; height:auto; border-radius:14px; border:1px solid rgba(0,42,100,.15); box-shadow:0 6px 18px rgba(0,42,100,.12); cursor:zoom-in; background:#fff}
+.its-info figcaption{font-size:.8rem; opacity:.7; margin-top:6px}
 .its-tiktok-play{flex:0 0 auto; width:44px; height:44px; border-radius:50%; background:#fff; color:#000; display:grid; place-items:center; font-size:18px; padding-left:3px}
 .its-tiktok b{display:block; font-size:1rem}
 .its-tiktok small{display:block; opacity:.75; font-size:.8rem; margin-top:2px}
@@ -1803,7 +1806,8 @@ function itsHtml(){
       sedi:'Andria (sede operativa: Via Lorenzo Bonomo, 49) e Bari',
       contatti:`tel. <a href="tel:0883592225">0883 592225</a> · <a href="mailto:info@itsacademypuma.it">info@itsacademypuma.it</a>`,
       links:[['Sito ufficiale','https://www.itsacademypuma.it/'],['Facebook','https://www.facebook.com/itsacademypuma'],['Instagram','https://www.instagram.com/itsacademypuma'],['LinkedIn','https://www.linkedin.com/school/itsacademypuma'],['Scheda Google (mappa e recensioni)','https://share.google/bKSXi7r5OvawnoM1r']],
-      video:[], tiktok:['https://vm.tiktok.com/ZN8yMDaWW/'] },
+      video:[], tiktok:['https://vm.tiktok.com/ZN8yMDaWW/'],
+      img:['its-puma-infografica.jpg','Infografica ITS Academy PuMa: 6 aree di competenza (Design, Imprenditorialità, Marketing e vendite, Innovazione, Sostenibilità, Amministrazione e finanza)'] },
     { nome:'ITS Academy Apulia Digital', g:'var(--red)', per:['SIA','Audiovisivo'],
       desc:`Percorsi biennali nel digitale. Per chi viene da SIA: Developer, Cyber Security, AI &amp; Data Science. Per chi viene dall'Audiovisivo: Digital Video Designer, 2D &amp; 3D Animator, Digital Media Specialist.`,
       sedi:'Barletta (Via G. Marconi, 39), Bari, Molfetta, Foggia, Brindisi, Lecce, Taranto',
@@ -1834,6 +1838,8 @@ function itsHtml(){
         <p>${f.desc}</p>
         <p><strong>Sedi:</strong> ${f.sedi}<br><strong>Contatti:</strong> ${f.contatti}</p>
         <div class="uni-links">${f.links.map(([t,u])=>L(t,u)).join('')}</div>
+        ${f.img?`<div class="uni-sub" style="margin-top:16px">Le aree di competenza</div>
+        <figure class="its-info"><img src="${f.img[0]}" alt="${f.img[1]}" loading="lazy" onclick="CAROUSEL_REGISTRY.itsinfo=['${f.img[0]}'];openLightbox('itsinfo',0)"><figcaption>Tocca l'immagine per ingrandirla</figcaption></figure>`:''}
         ${(f.video.length||(f.tiktok||[]).length)?`<div class="uni-sub" style="margin-top:16px">Video di presentazione</div>
         ${(f.tiktok||[]).map(u=>`<a class="its-tiktok" href="${u}" target="_blank" rel="noopener"><span class="its-tiktok-play">▶</span><span><b>Guarda il video su TikTok</b><small>Video di presentazione di ${f.nome.replace(/ \(.*\)/,'')}</small></span></a>`).join('')}
         <div class="its-video-grid">${f.video.map((id,i)=>`<div class="its-video-frame"><iframe src="https://www.youtube-nocookie.com/embed/${id}?rel=0" title="${f.nome} – video ${i+1}" loading="lazy" allow="accelerometer; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" allowfullscreen></iframe></div>`).join('')}</div>`:''}
@@ -2366,6 +2372,7 @@ function openLightbox(id, idx){
   lightboxIdx = idx;
   document.getElementById('lightbox-img').src = images[lightboxIdx];
   const lb = document.getElementById('lightbox');
+  lb.querySelectorAll('.lightbox-btn').forEach(b=>b.style.display = images.length>1 ? '' : 'none');
   lb.hidden = false;
   document.body.style.overflow = 'hidden';
 }
