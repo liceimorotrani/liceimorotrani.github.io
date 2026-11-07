@@ -1476,7 +1476,7 @@ function quickLinksHtml(){
   </section>`;
 }
 
-const BROCHURE = { ready: false, pages: 28, v: '20261107', pdf: 'Brochure_Licei_Aldo_Moro_2027-28.pdf' };
+const BROCHURE = { ready: true, pages: 28, v: '20261107b', pdf: 'Brochure_Licei_Aldo_Moro_2027-28.pdf' };
 function brochureHtml(){ if(!BROCHURE.ready) return ''; return `<a class="brochure-bn" href="#/" onclick="openBrochure();return false" aria-label="Sfoglia la nostra brochure">
       <span class="cv"><img src="brochure/cover.jpg?v=${BROCHURE.v}" alt="Copertina della brochure dei Licei Aldo Moro" loading="lazy"></span>
       <div><span class="k">Brochure 2027/2028</span><h3>Sfoglia la nostra brochure</h3><p>Indirizzi, quadri orari, laboratori e progetti: gira le pagine e scopri tutta la nostra offerta formativa.</p></div>
