@@ -818,13 +818,13 @@ var CATS = [
 function cat(id){ for (var i=0;i<CATS.length;i++) if (CATS[i].id===id) return CATS[i]; }
 function catColor(c){ return c.tipo==='ev' ? c.k : c.c; }
 var SEDI = {
-  'centrale':'Sede centrale · Via Gran Bretagna, 1',
-  'centrale (via gran bretagna)':'Sede centrale · Via Gran Bretagna, 1',
-  'cosmai':'Plesso «Sergio Cosmai» · Piazza Plebiscito, 16',
+  'centrale':'Trani · Sede centrale · Via Gran Bretagna, 1',
+  'centrale (via gran bretagna)':'Trani · Sede centrale · Via Gran Bretagna, 1',
+  'cosmai':'Sede Cosmai · Piazza Plebiscito, 16',
   'tutte le sedi':'In tutte le sedi dell’istituto',
   'loro sedi':'In tutte le sedi dell’istituto',
   'p.zza plebiscito':'Piazza Plebiscito, Trani',
-  'salvemini':'Sede IPSEOA · Via Salvemini',
+  'salvemini':'Sede succursale · Via Salvemini, 5',
   'centrale/cosmai':'Sede centrale (Via Gran Bretagna, 1) e plesso «Sergio Cosmai» (Piazza Plebiscito, 16)'
 };
 function sede(s){ var k=(s||'').trim().toLowerCase(); return SEDI[k] || s || ''; }
@@ -843,7 +843,7 @@ function nomeInd(ind){ var i=(ind||'').toLowerCase();
   return (ind||'').replace(/\s*\(.*\)/,''); }
 function orario(o){ return (o||'').replace(/\s*[–-]\s*/,'–'); }
 
-var SEDE_VGB='Sede centrale · Via Gran Bretagna, 1', SEDE_SALV='Sede IPSEOA · Via Salvemini, 1', SEDE_COSM='Plesso «Sergio Cosmai» · Piazza Plebiscito, 16';
+var SEDE_VGB='Trani · Sede centrale · Via Gran Bretagna, 1', SEDE_SALV='Sede succursale · Via Salvemini, 5', SEDE_COSM='Sede Cosmai · Piazza Plebiscito, 16';
 var SA_IND = {
   alberghiero:{breve:'Enogastronomia e ospitalità', nome:'Liceo dell’enogastronomia e dell’ospitalità alberghiera', c:'#FDB300'},
   ites:{breve:'Licei tecnologici', nome:'Licei tecnologici (AFM · SIA · RIM · Turismo)', c:'#109FAC'},
@@ -1265,7 +1265,7 @@ const PAGES = {
       "Sfoglia le foto dei laboratori di ciascun indirizzo: clicca su un'immagine per ingrandirla."],
     sedi:[
       {nome:'Licei tecnologici — amministrazione, finanza e marketing · turismo', desc:'Laboratori di informatica, economia aziendale e lingue. <b>Sede:</b> Via Gran Bretagna, 1.', accent:'teal', gallery:['hq-ites-2.jpg','hq-ites-3.jpg','hq-ites-4.jpg','hq-ites-5.jpg','hq-ites-6.jpg']},
-      {nome:'Liceo professionale per l\'enogastronomia e l\'ospitalità alberghiera', desc:'Cucine, pasticceria, sala e vendita, bar e accoglienza turistica. <b>Sedi:</b> Via Gran Bretagna, 1 e Via Salvemini, 1.', accent:'orange', gallery:['hq-alb-1.jpg','hq-alb-2.jpg','hq-alb-3.jpg','hq-alb-4.jpg','hq-alb-5.jpg','hq-alb-6.jpg','hq-alb-7.jpg','hq-alb-8.jpg']},
+      {nome:'Liceo professionale per l\'enogastronomia e l\'ospitalità alberghiera', desc:'Cucine, pasticceria, sala e vendita, bar e accoglienza turistica. <b>Sedi:</b> Via Gran Bretagna, 1 e Via Salvemini, 5.', accent:'orange', gallery:['hq-alb-1.jpg','hq-alb-2.jpg','hq-alb-3.jpg','hq-alb-4.jpg','hq-alb-5.jpg','hq-alb-6.jpg','hq-alb-7.jpg','hq-alb-8.jpg']},
       {nome:'Licei professionali — Moda e Audiovisivo', desc:'Sartoria, modellistica, disegno, set fotografico, green screen e post-produzione. <b>Sede:</b> plesso «Sergio Cosmai», Piazza Plebiscito, 16.', accent:'pink', gallery:['hq-mav-1.jpg','hq-ites-1.jpg','hq-mav-2.jpg','hq-mav-3.jpg','hq-mav-4.jpg','hq-mav-5.jpg','hq-mav-6.jpg','hq-mav-7.jpg','hq-mav-8.jpg','hq-mav-9.jpg','hq-mav-10.jpg','hq-mav-11.jpg','hq-mav-12.jpg','hq-mav-13.jpg','hq-mav-14.jpg','hq-mav-15.jpg','hq-mav-16.jpg','hq-mav-17.jpg','hq-mav-18.jpg','hq-mav-19.jpg','hq-mav-20.jpg','hq-mav-21.jpg']}
     ]
   },
@@ -1315,10 +1315,10 @@ const PAGES = {
       { etichetta:'Sede centrale', nome:'Via Gran Bretagna, 1', citta:'76125 Trani (BT)', tel:'0883 584593', telHref:'+390883584593', accent:'var(--teal)', foto:'school-strip.jpg',
         indirizzi:'Licei tecnologici per l\'amministrazione, la finanza e il marketing (SIA, RIM) e per il turismo · Liceo professionale per l\'enogastronomia e l\'ospitalità alberghiera · Filiera 4+2 · Segreteria e sportello iscrizioni',
         maps:'Via Gran Bretagna 1, 76125 Trani BT' },
-      { etichetta:'Sede Alberghiero', nome:'Via Salvemini, 1', citta:'76125 Trani (BT)', tel:'0883 589466', telHref:'+390883589466', accent:'var(--orange)', foto:'sede-salvemini.jpg', fotoPos:'center 35%',
+      { etichetta:'Sede succursale', nome:'Via Salvemini, 5', citta:'76125 Trani (BT)', tel:'0883 589466', telHref:'+390883589466', accent:'var(--orange)', foto:'sede-salvemini.jpg', fotoPos:'center 35%',
         indirizzi:'Liceo professionale per l\'enogastronomia e l\'ospitalità alberghiera — Cucina, Sala e Vendita, Pasticceria, Accoglienza turistica',
-        maps:'Via Salvemini, 76125 Trani BT' },
-      { etichetta:'Plesso «Sergio Cosmai»', nome:'Piazza Plebiscito, 16', citta:'76125 Trani (BT)', tel:'0883 1983369', telHref:'+3908831983369', accent:'var(--pink)', foto:'sede-plebiscito.jpg', fotoPos:'center 60%',
+        maps:'Via Salvemini 5, 76125 Trani BT' },
+      { etichetta:'Sede Cosmai', nome:'Piazza Plebiscito, 16', citta:'76125 Trani (BT)', tel:'0883 1983369', telHref:'+3908831983369', accent:'var(--pink)', foto:'sede-plebiscito.jpg', fotoPos:'center 60%',
         indirizzi:'Licei professionali per l\'industria e l\'artigianato per il Made in Italy (Moda) e per i servizi culturali e dello spettacolo (Audiovisivo)',
         maps:'Piazza Plebiscito 16, 76125 Trani BT' }
     ]
@@ -1546,13 +1546,13 @@ function renderHome(){
           <span class="sede-go">Come arrivare &rarr;</span>
         </a>
         <a class="sede-card is-link" href="#/dove/2">
-          <span class="eyebrow">Sede Alberghiero</span>
-          <h4>Via Salvemini, 1</h4>
+          <span class="eyebrow">Sede succursale</span>
+          <h4>Via Salvemini, 5</h4>
           <p>Liceo professionale per l'enogastronomia e l'ospitalità alberghiera — Cucina, Sala e Vendita, Pasticceria, Accoglienza turistica</p>
           <span class="sede-go">Come arrivare &rarr;</span>
         </a>
         <a class="sede-card is-link" href="#/dove/3">
-          <span class="eyebrow">Plesso «Sergio Cosmai»</span>
+          <span class="eyebrow">Sede Cosmai</span>
           <h4>Piazza Plebiscito, 16</h4>
           <p>Licei professionali per l'industria e l'artigianato per il Made in Italy (Moda) e per i servizi culturali e dello spettacolo (Audiovisivo)</p>
           <span class="sede-go">Come arrivare &rarr;</span>
