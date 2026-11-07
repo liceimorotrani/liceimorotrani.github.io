@@ -14,6 +14,36 @@
 .its-tiktok-play{flex:0 0 auto; width:44px; height:44px; border-radius:50%; background:#fff; color:#000; display:grid; place-items:center; font-size:18px; padding-left:3px}
 .its-tiktok b{display:block; font-size:1rem}
 .its-tiktok small{display:block; opacity:.75; font-size:.8rem; margin-top:2px}
+
+/* ---- Brochure sfogliabile ---- */
+.brochure-bn{margin-top:18px; display:grid; grid-template-columns:minmax(150px,240px) 1fr auto; gap:18px 26px; align-items:center; padding:18px 22px; border-radius:18px; background:#fff; border:1px solid #E3E9F5; box-shadow:var(--shadow); text-decoration:none; color:var(--navy-900); cursor:pointer; position:relative; overflow:hidden}
+.brochure-bn::before{content:""; position:absolute; inset:0 0 auto 0; height:6px; background:linear-gradient(90deg,#002A64 0 14%,#109FAC 14% 28%,#97D500 28% 42%,#FDB300 42% 56%,#FF751F 56% 70%,#D252FF 70% 85%,#FE114A 85%)}
+.brochure-bn .cv{position:relative; perspective:900px}
+.brochure-bn .cv img{display:block; width:100%; height:auto; aspect-ratio:775/548; object-fit:cover; border-radius:4px 8px 8px 4px; box-shadow:-3px 0 0 #d9dfeb, -6px 0 0 #c6cee0, 0 14px 28px -10px rgba(0,30,80,.45); transform:rotateY(-14deg); transform-origin:left center; transition:transform .5s ease}
+.brochure-bn:hover .cv img{transform:rotateY(-26deg)}
+.brochure-bn .k{display:inline-block; background:#E6F6F8; color:#0F829B; font-size:.68rem; font-weight:800; letter-spacing:.08em; text-transform:uppercase; padding:3px 9px; border-radius:999px}
+.brochure-bn h3{font-size:1.35rem; margin-top:6px; color:var(--navy-900)}
+.brochure-bn p{font-size:.9rem; color:#4A5A78; margin-top:4px; line-height:1.45}
+.brochure-bn .b{display:inline-flex; align-items:center; gap:8px; background:var(--navy-900); color:#fff; font-weight:800; font-size:.9rem; padding:12px 18px; border-radius:12px; white-space:nowrap}
+.brochure-bn .b svg{width:18px; height:18px; animation:bnudge 1.6s ease-in-out infinite}
+@keyframes bnudge{0%,100%{transform:translateX(0)}50%{transform:translateX(4px)}}
+@media (max-width:640px){.brochure-bn{grid-template-columns:1fr; text-align:left}.brochure-bn .cv{max-width:260px}.brochure-bn .b{justify-self:start}}
+.fb-ov{position:fixed; inset:0; z-index:9999; background:rgba(4,16,40,.97); backdrop-filter:blur(6px); display:flex; flex-direction:column; align-items:center; justify-content:center; padding:56px 12px 70px}
+.fb-ov[hidden]{display:none}
+.fb-top{position:absolute; top:0; left:0; right:0; display:flex; align-items:center; justify-content:space-between; gap:12px; padding:10px 14px; color:#fff}
+.fb-top .t{font-weight:800; font-size:.95rem; letter-spacing:.02em}
+.fb-top .act{display:flex; gap:8px; margin-left:auto}
+.fb-btn{display:inline-flex; align-items:center; gap:6px; background:rgba(255,255,255,.12); color:#fff; border:0; border-radius:10px; padding:9px 13px; font:inherit; font-weight:700; font-size:.85rem; cursor:pointer; text-decoration:none}
+.fb-btn:hover{background:rgba(255,255,255,.22)}
+.fb-btn.y{background:#FDB300; color:#002A64}
+.fb-stage{width:min(1200px,100%); flex:1; display:flex; align-items:center; justify-content:center; min-height:0}
+.fb-book{margin:0 auto}
+.fb-page{background:#fff}
+.fb-page img{width:100%; height:100%; object-fit:contain; display:block; user-select:none; -webkit-user-drag:none}
+.fb-nav{position:absolute; bottom:14px; left:0; right:0; display:flex; align-items:center; justify-content:center; gap:14px; color:#fff; font-weight:700; font-size:.9rem}
+.fb-nav .fb-btn{padding:10px 16px; font-size:1rem}
+.fb-hint{position:absolute; bottom:62px; color:#C9D6F2; font-size:.8rem; opacity:.9}
+@media (max-width:640px){.fb-top .t{display:none}}
 </style></head><body>
 <title>Moro Campus Trani</title>
 <link rel="icon" type="image/png" sizes="32x32" href="favicon-32.png">
@@ -1446,8 +1476,39 @@ function quickLinksHtml(){
   </section>`;
 }
 
-function dlManHtml(){ return `<a class="dl-man" href="Manifesto_OpenDays_Laboratori_2026-27.pdf?v=20261031c" target="_blank" rel="noopener" onclick="return dlManifesto(event)">
-      <img src="manifesto-thumb.jpg?v=20261031c" alt="Anteprima del manifesto Open days e laboratori didattici" loading="lazy">
+const BROCHURE = { ready: false, pages: 28, v: '20261107', pdf: 'Brochure_Licei_Aldo_Moro_2027-28.pdf' };
+function brochureHtml(){ if(!BROCHURE.ready) return ''; return `<a class="brochure-bn" href="#/" onclick="openBrochure();return false" aria-label="Sfoglia la nostra brochure">
+      <span class="cv"><img src="brochure/cover.jpg?v=${BROCHURE.v}" alt="Copertina della brochure dei Licei Aldo Moro" loading="lazy"></span>
+      <div><span class="k">Brochure 2027/2028</span><h3>Sfoglia la nostra brochure</h3><p>Indirizzi, quadri orari, laboratori e progetti: gira le pagine e scopri tutta la nostra offerta formativa.</p></div>
+      <span class="b">Sfoglia<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14"/><path d="M13 6l6 6-6 6"/></svg></span>
+    </a>`; }
+let _fb=null;
+function loadPageFlip(){ return window.St ? Promise.resolve() : new Promise((ok,ko)=>{ const sc=document.createElement('script'); sc.src='https://cdn.jsdelivr.net/npm/page-flip@2.0.7/dist/js/page-flip.browser.js'; sc.onload=ok; sc.onerror=ko; document.head.appendChild(sc); }); }
+function fbSize(){ const st=document.querySelector('.fb-stage'); const W=st.clientWidth, H=st.clientHeight; const ar=548/775; const portrait = W < 820; const per = portrait ? 1 : 2; let w=Math.min(W/per, 620), h=w*ar; if(h>H){ h=H; w=h/ar; } return {w:Math.floor(w), h:Math.floor(h), portrait}; }
+async function openBrochure(){
+  let ov=document.getElementById('fb-ov');
+  if(!ov){
+    ov=document.createElement('div'); ov.id='fb-ov'; ov.className='fb-ov'; ov.setAttribute('role','dialog'); ov.setAttribute('aria-label','Brochure sfogliabile');
+    ov.innerHTML=`<div class="fb-top"><span class="t">Brochure Licei Aldo Moro · 2027/2028</span><span class="act"><a class="fb-btn y" href="brochure/${BROCHURE.pdf}?v=${BROCHURE.v}" target="_blank" rel="noopener">Scarica PDF</a><button class="fb-btn" onclick="closeBrochure()" aria-label="Chiudi">✕ Chiudi</button></span></div>
+      <div class="fb-stage"><div class="fb-book" id="fb-book"></div></div>
+      <div class="fb-hint" id="fb-hint">Trascina l'angolo o usa le frecce per sfogliare</div>
+      <div class="fb-nav"><button class="fb-btn" onclick="_fb&&_fb.flipPrev()" aria-label="Pagina precedente">‹</button><span id="fb-pg">1 / ${BROCHURE.pages}</span><button class="fb-btn" onclick="_fb&&_fb.flipNext()" aria-label="Pagina successiva">›</button></div>`;
+    document.body.appendChild(ov);
+    document.addEventListener('keydown',e=>{ if(ov.hidden) return; if(e.key==='Escape') closeBrochure(); if(e.key==='ArrowRight') _fb&&_fb.flipNext(); if(e.key==='ArrowLeft') _fb&&_fb.flipPrev(); });
+  }
+  ov.hidden=false; document.body.style.overflow='hidden';
+  if(_fb) return;
+  try{ await loadPageFlip(); }catch(e){ window.open('brochure/'+BROCHURE.pdf,'_blank','noopener'); closeBrochure(); return; }
+  const book=document.getElementById('fb-book'); book.innerHTML='';
+  for(let i=1;i<=BROCHURE.pages;i++){ const d=document.createElement('div'); d.className='fb-page'; d.innerHTML=`<img src="brochure/p${String(i).padStart(2,'0')}.webp?v=${BROCHURE.v}" alt="Pagina ${i}" ${i>4?'loading="lazy"':''}>`; book.appendChild(d); }
+  const z=fbSize();
+  _fb=new St.PageFlip(book,{width:z.w,height:z.h,size:'fixed',showCover:true,usePortrait:z.portrait,mobileScrollSupport:false,maxShadowOpacity:.45,flippingTime:700});
+  _fb.loadFromHTML(book.querySelectorAll('.fb-page'));
+  _fb.on('flip',e=>{ const n=e.data+1; document.getElementById('fb-pg').textContent=n+' / '+BROCHURE.pages; document.getElementById('fb-hint').style.display='none'; });
+}
+function closeBrochure(){ const ov=document.getElementById('fb-ov'); if(ov){ ov.hidden=true; } document.body.style.overflow=''; if(location.hash==='#/brochure') history.replaceState(null,'','#/'); }
+function dlManHtml(){ return `<a class="dl-man" href="Manifesto_OpenDays_Laboratori_2026-27.pdf?v=20261107" target="_blank" rel="noopener" onclick="return dlManifesto(event)">
+      <img src="manifesto-thumb.jpg?v=20261107" alt="Anteprima del manifesto Open days e laboratori didattici" loading="lazy">
       <div><span class="k">Programma 2026/2027</span><h3>Open days e laboratori didattici</h3><p>Scarica il manifesto con tutte le date, da stampare o condividere.</p></div>
       <span class="b"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3v12"/><path d="M7 10l5 5 5-5"/><path d="M5 21h14"/></svg>Scarica PDF</span>
     </a>`; }
@@ -1499,6 +1560,7 @@ function renderHome(){
   ${quickLinksHtml()}
   <div class="wrap" style="padding-bottom:30px">
     ${dlManHtml()}
+    ${brochureHtml()}
   </div>
 
   <section class="hero" style="padding-block-start:52px">
@@ -2268,6 +2330,7 @@ function router(){
   let html = '';
   let navKey = null;
 
+  if(hash === '#/brochure'){ app.innerHTML = renderHome(); initCarousels(); openBrochure(); return; }
   if(hash === '#/' || hash === ''){
     html = renderHome();
   } else if(hash === '#/laboratori'){
@@ -2413,18 +2476,19 @@ document.addEventListener('keydown', e=>{
 let __dlP=null;
 function __dl(){ if(!__dlP){ __dlP=(window.claude&&claude.use)?claude.use("downloads").catch(()=>null):Promise.resolve(null);} return __dlP; }
 __dl();
+
 function dlManifesto(ev){
   ev.preventDefault();
   const btn=ev.currentTarget.querySelector('.b'); const old=btn?btn.innerHTML:'';
   (async()=>{
     const d=await __dl();
-    if(!d){ window.open('Manifesto_OpenDays_Laboratori_2026-27.pdf?v=20261031c','_blank','noopener'); return; }
+    if(!d){ window.open('Manifesto_OpenDays_Laboratori_2026-27.pdf?v=20261107','_blank','noopener'); return; }
     try{
       if(btn) btn.textContent='Preparazione…';
-      const blob=await fetch('Manifesto_OpenDays_Laboratori_2026-27.pdf?v=20261031c').then(r=>{if(!r.ok)throw new Error();return r.blob();});
+      const blob=await fetch('Manifesto_OpenDays_Laboratori_2026-27.pdf?v=20261107').then(r=>{if(!r.ok)throw new Error();return r.blob();});
       await d.save({filename:'Manifesto_OpenDays_Laboratori_2026-27.pdf', data:blob});
     }catch(e){
-      if(e&&e.code&&e.code!=='declined'&&e.code!=='rate_limited'){ window.open('Manifesto_OpenDays_Laboratori_2026-27.pdf?v=20261031c','_blank','noopener'); }
+      if(e&&e.code&&e.code!=='declined'&&e.code!=='rate_limited'){ window.open('Manifesto_OpenDays_Laboratori_2026-27.pdf?v=20261107','_blank','noopener'); }
     }finally{ if(btn) btn.innerHTML=old; }
   })();
   return false;
