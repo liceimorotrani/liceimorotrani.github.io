@@ -843,10 +843,18 @@ function nomeInd(ind){ var i=(ind||'').toLowerCase();
   return (ind||'').replace(/\s*\(.*\)/,''); }
 function orario(o){ return (o||'').replace(/\s*[–-]\s*/,'–'); }
 
+var SEDE_VGB='Sede centrale · Via Gran Bretagna, 1', SEDE_SALV='Sede IPSEOA · Via Salvemini, 1', SEDE_COSM='Plesso «Sergio Cosmai» · Piazza Plebiscito, 16';
+var SA_IND = {
+  alberghiero:{breve:'Enogastronomia e ospitalità', nome:'Liceo dell’enogastronomia e dell’ospitalità alberghiera', c:'#FDB300'},
+  ites:{breve:'Licei tecnologici', nome:'Licei tecnologici (AFM · SIA · RIM · Turismo)', c:'#109FAC'},
+  modaav:{breve:'Moda e Audiovisivo', nome:'Licei professionali Moda e Audiovisivo', c:'#ED40F1'}
+};
+var SA_ITES='Visita guidata degli ambienti e scoperta delle attività';
+/* Scuola aperta: un appuntamento distinto per indirizzo (iscrizioni separate nel foglio) */
 var SCUOLA_APERTA = {
-  '21/11/2026':{sede:'Via Gran Bretagna, 1', righe:[['ALBERGHIERO E ITES','Calligramma (laboratorio di scrittura creativa) e visita degli ambienti']]},
-  '12/12/2026':{sede:'Via Gran Bretagna, 1 e Piazza Plebiscito, 16', noSede:true, righe:[['ALBERGHIERO E ITES','Scopriamo la filiera 4+2 (laboratorio di cucina) e visita degli ambienti','Via Gran Bretagna, 1'],['MODA E AUDIOVISIVO','visita degli ambienti e delle attività','Piazza Plebiscito, 16 (plesso «Sergio Cosmai»)']]},
-  '30/01/2027':{sede:'Via Gran Bretagna, 1', righe:[['ALBERGHIERO E ITES','Master Host Challenge (laboratorio di accoglienza turistica) e visita degli ambienti']]}
+  '21/11/2026':[['alberghiero','Calligramma (laboratorio di scrittura creativa) e visita degli ambienti',SEDE_VGB],['ites',SA_ITES,SEDE_VGB]],
+  '12/12/2026':[['alberghiero','Scopriamo la filiera 4+2 (laboratorio di cucina) e visita degli ambienti',SEDE_VGB],['ites',SA_ITES,SEDE_VGB],['modaav','Fotografi per un giorno: osservare, immaginare, creare',SEDE_COSM]],
+  '30/01/2027':[['alberghiero','Master Host Challenge (laboratorio di accoglienza turistica) e visita degli ambienti',SEDE_SALV],['ites',SA_ITES,SEDE_VGB]]
 };
 function righeSA(e){ return e.righe.map(function(r){ return '<span class="aperti"><b>'+esc(r[0])+'</b>: '+esc(r[1])+(r[2]?'<span class="sa-sede">Sede: '+esc(r[2])+'</span>':'')+'</span>'; }).join(''); }
 function buildEvents(rows){
@@ -884,12 +892,17 @@ function buildEvents(rows){
       out.push(e);
     }
   });
-  out.forEach(function(e){ var o=e.cat==='scuola'&&SCUOLA_APERTA[e.data]; if(o){ e.sede=o.sede; e.righe=o.righe; e.noSede=!!o.noSede; e.desc=''; e.extra=[]; } });
+  var split=[];
+  out=out.filter(function(e){ var o=e.cat==='scuola'&&SCUOLA_APERTA[e.data]; if(!o) return true;
+    o.forEach(function(r){ var ind=SA_IND[r[0]];
+      split.push({cat:'scuola', data:e.data, d:e.d, giorno:e.giorno, orario:e.orario, sede:r[2], nome:'Scuola aperta · '+ind.breve, ind:ind, desc:r[1], extra:[], pending:false}); });
+    return false; });
+  out=out.concat(split);
   out.forEach(function(e){
     e.id=[e.cat,e.data,e.orario,e.nome].join('|');
     if(e.extra.length) e.desc=(e.desc?e.desc+'. ':'')+e.extra.join(' · ');
   });
-  out.sort(function(a,b){ return a.d-b.d || (a.orario>b.orario?1:-1); });
+  out.sort(function(a,b){ return a.d-b.d || (a.orario>b.orario?1:a.orario<b.orario?-1:0); });
   return out;
 }
 
@@ -909,10 +922,10 @@ function catHTML(c){
   var darkDate=(c.id==='audiovisivo');
   evs.forEach(function(e){
     var on=!!SEL[e.id], bk=!!BOOKED[e.id];
-    h+='<label class="ev-card'+(on?' on':'')+(bk?' booked':'')+'" style="--cc:'+col+'"><input type="checkbox" data-id="'+esc(e.id)+'"'+(on?' checked':'')+(bk?' disabled':'')+'>'+
+    h+='<label class="ev-card'+(on?' on':'')+(bk?' booked':'')+'" style="--cc:'+(e.ind?e.ind.c:col)+'"><input type="checkbox" data-id="'+esc(e.id)+'"'+(on?' checked':'')+(bk?' disabled':'')+'>'+
       '<span class="date'+(darkDate?' dark':'')+'"><b>'+e.d.getDate()+'</b><span>'+MESI[e.d.getMonth()]+' '+String(e.d.getFullYear()).slice(2)+'</span></span>'+
       '<span class="ev-info"><span class="when">'+esc(e.giorno)+(e.orario?' · ore '+esc(e.orario):'')+'</span><h3>'+esc(e.nome)+'</h3>'+
-      (e.righe?righeSA(e):(e.desc?'<p>'+esc(e.desc)+'</p>':''))+(e.pending?'<span class="pending">Programma del laboratorio in arrivo</span><br>':'')+
+      (e.ind?'<span class="aperti"><b>'+esc(e.ind.nome.toUpperCase())+'</b>: '+esc(e.desc)+'</span>':(e.desc?'<p>'+esc(e.desc)+'</p>':''))+(e.pending?'<span class="pending">Programma del laboratorio in arrivo</span><br>':'')+
       (e.sede&&!e.noSede?'<span class="where">'+svg('pin')+esc(e.sede)+'</span>':'')+(bk?'<span class="booked-tag">'+svg('tick',3)+' Già prenotato</span>':'')+'</span>'+
       '<span class="check">'+svg('tick',3)+'</span></label>';
   });
@@ -920,7 +933,7 @@ function catHTML(c){
 }
 function sumHTML(list,removable){
   return '<div class="sum">'+list.map(function(e){ var c=cat(e.cat);
-    return '<div class="sum-item" style="--cc:'+catColor(c)+'"><i></i><div><b>'+esc(e.nome)+'</b><span>'+esc(c.breve||c.nome)+' · '+esc(e.giorno)+' '+dLabel(e)+(e.orario?' · ore '+esc(e.orario):'')+'<br>'+esc(e.sede)+'</span></div>'+
+    return '<div class="sum-item" style="--cc:'+(e.ind?e.ind.c:catColor(c))+'"><i></i><div><b>'+esc(e.nome)+'</b><span>'+esc(e.ind?e.desc:(c.breve||c.nome))+' · '+esc(e.giorno)+' '+dLabel(e)+(e.orario?' · ore '+esc(e.orario):'')+'<br>'+esc(e.sede)+'</span></div>'+
       (removable?'<button type="button" data-rm="'+esc(e.id)+'" aria-label="Rimuovi">×</button>':'<span></span>')+'</div>';
   }).join('')+'</div>';
 }
@@ -976,9 +989,9 @@ function submitForm(ev){
   document.getElementById('f-privacy').classList.toggle('bad',!priv); if(!priv) ok=false;
   if(!ok){ document.getElementById('isc-ferr').textContent='Controlla i campi evidenziati.'; var b=f.querySelector('.bad input,.bad select'); if(b) b.focus(); return; }
   var s=selList(), ints=[];
-  s.forEach(function(e){ var c=cat(e.cat); if(c.tipo!=='ev'){ var n=c.breve||c.nome; if(ints.indexOf(n)<0) ints.push(n); } });
+  s.forEach(function(e){ var c=cat(e.cat); var n=e.ind?e.ind.breve:(c.tipo!=='ev'?(c.breve||c.nome):''); if(n && ints.indexOf(n)<0) ints.push(n); });
   var q={a:v.alunno, s:v.scuola, c:v.classe, g:v.genitore, t:v.telefono, e:v.email, n:f.partecipanti.value, i:ints.join(', '),
-    v:s.map(function(e){ var c=cat(e.cat); return [e.cat, c.breve||c.nome, e.nome, e.data, e.giorno, e.orario, e.sede]; })};
+    v:s.map(function(e){ var c=cat(e.cat); return e.ind ? [e.cat, 'Scuola aperta · '+e.ind.breve, e.desc, e.data, e.giorno, e.orario, e.sede] : [e.cat, c.breve||c.nome, e.nome, e.data, e.giorno, e.orario, e.sede]; })};
   var url=EXEC+'?action=iscrivi&d='+encodeURIComponent(JSON.stringify(q));
   try{ window.open(url,'_blank','noopener'); }catch(err){}
   saveDraft(); DRAFT.privacy=true;
