@@ -1278,10 +1278,10 @@ const F42 = { anni:['I','II','III','IV'], righe:[
   ['Laboratorio servizi di accoglienza turistica',[2,2,'-','-'],1]
 ]};
 const F42_TOT = [
-  ['Totale ore settimanali',['38 (di cui 3*)','38 (di cui 3*)','42 (di cui 7*)','42 (di cui 7*)'],''],
-  ['Ore annue (33 settimane)',['1.254','1.254','1.386','1.386'],'']
+  ['Totale ore settimanali',['35+3*','35+3*','35+7*','35+7*'],''],
+  ['Ore annue (33 settimane)',['1.155+99*','1.155+99*','1.155+231*','1.155+231*'],'']
 ];
-const F42_ANNUE = [['I anno','1.254'],['II anno','1.254'],['III anno','1.386'],['IV anno','1.386']];
+const F42_ANNUE = [['I anno','1.155 + 99*'],['II anno','1.155 + 99*'],['III anno','1.155 + 231*'],['IV anno','1.155 + 231*']];
 const F42_CONFRONTO = [
   ['Ore di lezione','4.620','5.280'],['Ore di potenziamento*','660','–'],['Totale','5.280','5.280']
 ];
@@ -1392,7 +1392,7 @@ function f42Table(){
       <thead><tr><th>Disciplina</th>${F42.anni.map(a=>`<th>${a} anno</th>`).join('')}</tr></thead>
       <tbody>${rows}${totRows}</tbody>
     </table>
-    <p class="quadro-note">* ore di potenziamento (3 ore nel I e II anno, 7 nel III e IV; 20 in tutto), comprese nel totale settimanale. Ore annue calcolate su 33 settimane. Proposta "Enogastronomia" IP22, a.s. 2027/2028.</p>
+    <p class="quadro-note">* ore di potenziamento dell'offerta formativa di filiera (3 a settimana nel I e II anno, 7 nel III e IV): Formazione Scuola-Lavoro, tutoraggio, orientamento in ingresso e in uscita, incontri con esperti e project work con esperti ITS. Ore annue calcolate su 33 settimane. Proposta "Enogastronomia" IP22, a.s. 2027/2028.</p>
   </div>
   <div class="totali-grid">${totaliBoxes}</div>
   <div class="quadro-wrap" style="margin-top:16px;--accent:var(--rust);--accent-soft:var(--rust-soft)">
