@@ -1264,28 +1264,26 @@ const INDIRIZZI = [
 ];
 
 const F42 = { anni:['I','II','III','IV'], righe:[
-  ['Lingua e letteratura italiana',[5,5,5,5],0],['Lingua inglese',[3,3,3,3],0],['Matematica',[3,3,5,5],0],
-  ['Storia',[2,2,2,2],0],['Geografia',[1,1,'-','-'],0],
-  ['Diritto ed economia <small>(di cui in compresenza)</small>',['2 (2)','2 (2)','-','-'],0],
-  ['Scienze motorie',[2,2,2,2],0],['IRC / attività alternative',[1,1,1,1],0],
-  ['Seconda lingua straniera — Spagnolo <small>(*in compresenza)</small>',[3,3,'2+(1*)','2+(1*)'],1],
-  ['Scienze integrate <small>(di cui in compresenza)</small>',['2 (1)(1)','2 (1)(1)','-','-'],1],
-  ['TIC <small>(*in compresenza)</small>',['2 (2*)','1 (1*)','-','-'],1],
-  ['Scienze degli alimenti <small>(*/di cui in compresenza)</small>',['2+(1*) (1)','2+(1*) (1)','-','-'],1],
-  ["Scienze e cultura dell'alimentazione <small>(in compresenza)</small>",['-','-','5 (1)','5 (1)'],1],
-  ['DTSAR <small>(*in compresenza)</small>',['*(2)','*(2)',4,4],1],
-  ['Laboratorio serv. enogastronomici — cucina "biennio" <small>(di cui in compresenza)</small>',['6 (4)','7 (4)','-','-'],1],
-  ['Laboratorio serv. enogastronomici — cucina "triennio" <small>(di cui/*in compresenza)</small>',['-','-','7 (1)+(1*)','7 (1)+(1*)'],1],
-  ['Laboratorio serv. enogastronomici — sala e vendita <small>(*in compresenza)</small>',['*(4)','*(4)','-','-'],1],
-  ['Laboratorio accoglienza turistica <small>(*in compresenza)</small>',['2 (2*)','2 (2*)','-','-'],1]
+  ['Lingua e letteratura italiana',[5,5,5,5],0],['Lingua inglese',['3+1*',3,2,'2+1*'],0],['Matematica',['4+1*',5,'3+1*',3],0],
+  ['Storia',[1,'1+1*',2,'2+1*'],0],['Geografia generale ed economica',[1,1,'-','-'],0],
+  ['Diritto ed economia',[2,2,'-','-'],0],
+  ['Scienze motorie e sportive',[2,2,'2+1*','2+1*'],0],['Religione cattolica / attività alternative',[1,1,1,'1+1*'],0],
+  ['Seconda lingua straniera (spagnolo)',['2+1*',3,'3+1*',3],1],
+  ['Scienze integrate',[2,2,'-','-'],1],
+  ["Tecnologie dell'informazione e della comunicazione",[2,1,'-','-'],1],
+  ['Scienze degli alimenti',[2,2,'-','-'],1],
+  ["Scienza e cultura dell'alimentazione",['-','-','5+2*','5+1*'],1],
+  ['Diritto e tecniche amministrative della struttura ricettiva',['-','-','5+1*','5+1*'],1],
+  ['Laboratorio servizi enogastronomici — cucina',[6,'5+2*','7+1*','7+1*'],1],
+  ['Laboratorio servizi di accoglienza turistica',[2,2,'-','-'],1]
 ]};
 const F42_TOT = [
-  ['Totale ore settimanali',[36,37,36,36],'145 annue complessive'],
-  ['di cui in compresenza',[13,12,2,2],'29 ore complessive']
+  ['Totale ore settimanali',['38 (di cui 3*)','38 (di cui 3*)','42 (di cui 7*)','42 (di cui 7*)'],''],
+  ['Ore annue (33 settimane)',['1.254','1.254','1.386','1.386'],'']
 ];
-const F42_ANNUE = [['I anno',1224],['II anno',1258],['III anno',1224],['IV anno',1224]];
+const F42_ANNUE = [['I anno','1.254'],['II anno','1.254'],['III anno','1.386'],['IV anno','1.386']];
 const F42_CONFRONTO = [
-  ['Ore curriculari',4930,5280],['Compresenze',986,396],['Totale',5916,5676]
+  ['Ore di lezione','4.620','5.280'],['Ore di potenziamento*','660','–'],['Totale','5.280','5.280']
 ];
 
 const PAGES = {
@@ -1394,7 +1392,7 @@ function f42Table(){
       <thead><tr><th>Disciplina</th>${F42.anni.map(a=>`<th>${a} anno</th>`).join('')}</tr></thead>
       <tbody>${rows}${totRows}</tbody>
     </table>
-    <p class="quadro-note">Valori tra parentesi: ore in compresenza con un secondo docente. * ore in compresenza con docente ITP. Dati aggiornati alla proposta "Enogastronomia" IP22.</p>
+    <p class="quadro-note">* ore di potenziamento (3 ore nel I e II anno, 7 nel III e IV; 20 in tutto), comprese nel totale settimanale. Ore annue calcolate su 33 settimane. Proposta "Enogastronomia" IP22, a.s. 2027/2028.</p>
   </div>
   <div class="totali-grid">${totaliBoxes}</div>
   <div class="quadro-wrap" style="margin-top:16px;--accent:var(--rust);--accent-soft:var(--rust-soft)">
