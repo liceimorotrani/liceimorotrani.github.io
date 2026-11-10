@@ -1892,13 +1892,16 @@ function itsHtml(){
       sedi:'Locorotondo (BA), S.C. 138 C.da Marangi, 26',
       contatti:`tel. <a href="tel:0804312767">080 4312767</a>`,
       links:[['Sito ITS AgriPuglia','https://www.itsagroalimentarepuglia.it/'],['Agribusiness School','https://www.agribusiness.school/it/']],
-      video:['vJDiCsCGNfs'] }
+      video:['vJDiCsCGNfs'] },
+    { nome:'ITS Academy Turismo Puglia — Turismo, Beni e Attività Culturali', g:'var(--green)', per:['Turismo','Accoglienza turistica','Enogastronomia','Sala e vendita'],
+      desc:`Fondazione ITS della Puglia per il turismo, i beni e le attività culturali ed artistiche. Percorsi biennali post-diploma per lavorare nell'ospitalità e nella gestione delle strutture ricettive, nel food, nel benessere e nelle esperienze territoriali, nel marketing, nella comunicazione e nei media digitali per il turismo e la cultura.`,
+      sedi:'Lecce (sede operativa: Via Corte dei Mesagnesi, c/o Officine Cantelmo); corsi attivi in diverse sedi della Puglia',
+      contatti:`<a href="mailto:info@itsturismopuglia.it">info@itsturismopuglia.it</a>`,
+      links:[['Sito ufficiale','https://www.itsturismopuglia.it/'],['TikTok','https://www.tiktok.com/@itsturismo.puglia'],['Video su Facebook','https://www.facebook.com/reel/1474652607780451']],
+      video:['4A6f6JTqHRA'],
+      altri:[['Ospitalità e gestione delle strutture','https://youtu.be/oMdIHwddPSw'],['Food, benessere ed esperienze territoriali','https://youtu.be/cl4tfszFUOg'],['Marketing, comunicazione e media digitali per turismo e cultura','https://youtu.be/sJ_5ZVWVJ-A'],['Il talento dei nostri studenti racconta la Puglia Wellness','https://youtu.be/mh9EA4J4Z70']] }
   ];
   const ALTRI = [
-    { t:'Turismo e beni culturali', g:'var(--green)', puglia:[
-        ['ITS Academy della Puglia per il Turismo, i Beni e le Attività Culturali (Lecce)','https://www.itsturismopuglia.it/'] ] },
-    { t:'Enogastronomia e ospitalità alberghiera', g:'var(--orange)', puglia:[
-        ['ITS Academy Turismo Puglia — ospitalità e accoglienza','https://www.itsturismopuglia.it/'] ] },
     { t:'Moda, cinema e spettacolo', g:'var(--pink)', puglia:[
         ['ITS Academy MI.TI. Moda — modellista-prototipista, moda sostenibile, marketing moda, modellista per cinema e spettacolo','https://www.itsmitimoda.it/'] ] }
   ];
@@ -1916,6 +1919,7 @@ function itsHtml(){
         ${(f.video.length||(f.tiktok||[]).length)?`<div class="uni-sub" style="margin-top:16px">Video di presentazione</div>
         ${(f.tiktok||[]).map(u=>`<a class="its-tiktok" href="${u}" target="_blank" rel="noopener"><span class="its-tiktok-play">▶</span><span><b>Guarda il video su TikTok</b><small>Video di presentazione di ${f.nome.replace(/ \(.*\)/,'')}</small></span></a>`).join('')}
         <div class="its-video-grid">${f.video.map((id,i)=>`<div class="its-video-frame"><iframe src="https://www.youtube-nocookie.com/embed/${id}?rel=0" title="${f.nome} – video ${i+1}" loading="lazy" allow="accelerometer; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" allowfullscreen></iframe></div>`).join('')}</div>`:''}
+        ${(f.altri||[]).length?`<div class="uni-sub" style="margin-top:14px">Altri video su YouTube</div><div class="uni-links">${f.altri.map(([t,u])=>L(t,u)).join('')}</div>`:''}
         <p style="margin:14px 0 0;font-size:.85rem">Materiale informativo cartaceo disponibile al desk orientamento della biblioteca (sede di Via Gran Bretagna, 1).</p>
       </div>`).join('')}
       <h3 class="terz-h">Altre fondazioni ITS in Puglia</h3>
