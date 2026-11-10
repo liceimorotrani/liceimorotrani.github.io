@@ -15,6 +15,24 @@
 .its-tiktok b{display:block; font-size:1rem}
 .its-tiktok small{display:block; opacity:.75; font-size:.8rem; margin-top:2px}
 
+/* ---- Video offerta formativa (YouTube, caricamento al clic) ---- */
+.pv-sec{margin-top:22px}
+.pv-head{display:flex; align-items:baseline; gap:10px; flex-wrap:wrap; margin-bottom:12px}
+.pv-head h2{font-size:1.35rem; color:var(--navy-900)}
+.pv-head span{font-size:.9rem; color:#4A5A78}
+.pv-grid{display:grid; grid-template-columns:repeat(2,minmax(0,1fr)); gap:18px}
+.pv-card{background:#fff; border:1px solid #E3E9F5; border-radius:18px; overflow:hidden; box-shadow:0 10px 24px -16px rgba(0,30,80,.35); border-top:6px solid var(--pv,#002A64)}
+.pv-frame{position:relative; aspect-ratio:16/9; background:#0b1730; cursor:pointer}
+.pv-frame img{color:transparent; position:absolute; inset:0; width:100%; height:100%; object-fit:cover; transition:transform .4s}
+.pv-frame:hover img{transform:scale(1.03)}
+.pv-frame iframe{position:absolute; inset:0; width:100%; height:100%; border:0}
+.pv-play{position:absolute; left:50%; top:50%; transform:translate(-50%,-50%); width:74px; height:74px; border-radius:50%; background:var(--pv,#002A64); color:#fff; display:grid; place-items:center; font-size:28px; padding-left:5px; box-shadow:0 8px 24px rgba(0,0,0,.4); border:3px solid #fff}
+.pv-body{padding:14px 18px 16px}
+.pv-body .k{display:inline-block; font-size:.68rem; font-weight:800; letter-spacing:.08em; text-transform:uppercase; padding:3px 9px; border-radius:999px; background:var(--pv-soft,#E6F6F8); color:var(--navy-900)}
+.pv-body h3{font-size:1.1rem; margin-top:6px; color:var(--navy-900)}
+.pv-body p{font-size:.88rem; color:#4A5A78; margin-top:3px; line-height:1.45}
+.pv-single{max-width:640px; margin:6px 0 18px}
+@media (max-width:720px){.pv-grid{grid-template-columns:1fr}.pv-play{width:60px;height:60px;font-size:22px}}
 /* ---- Brochure sfogliabile ---- */
 .brochure-bn{margin-top:18px; display:grid; grid-template-columns:minmax(150px,240px) 1fr auto; gap:18px 26px; align-items:center; padding:18px 22px; border-radius:18px; background:#fff; border:1px solid #E3E9F5; box-shadow:var(--shadow); text-decoration:none; color:var(--navy-900); cursor:pointer; position:relative; overflow:hidden}
 .brochure-bn::before{content:""; position:absolute; inset:0 0 auto 0; height:6px; background:linear-gradient(90deg,#002A64 0 14%,#109FAC 14% 28%,#97D500 28% 42%,#FDB300 42% 56%,#FF751F 56% 70%,#D252FF 70% 85%,#FE114A 85%)}
@@ -1474,6 +1492,18 @@ function quickLinksHtml(){
   </section>`;
 }
 
+const PROMO_VIDEOS = [
+  { id:'cyHwQqGlSng', k:'Via Gran Bretagna · Via Salvemini', title:'Licei tecnologici e Liceo dell\'enogastronomia', sub:'ITES (AFM, SIA, RIM, Turismo), Alberghiero e Filiera 4+2: scopri ambienti, laboratori e attività.', color:'#109FAC', soft:'#E6F6F8', groups:['ITES','TURISMO','IPSEOA','FIL42','SERALE'] },
+  { id:'47MQkpTj01E', k:'Plesso «Sergio Cosmai» · Piazza Plebiscito', title:'Moda e Audiovisivo', sub:'Made in Italy e servizi culturali e dello spettacolo: atelier, set e laboratori del plesso Cosmai.', color:'#ED40F1', soft:'#FCE8FD', groups:['MODA','AV'] }
+];
+function pvCard(v){ return `<div class="pv-card" style="--pv:${v.color};--pv-soft:${v.soft}">
+    <div class="pv-frame" role="button" tabindex="0" aria-label="Guarda il video: ${v.title}" onclick="pvPlay(this,'${v.id}')" onkeydown="if(event.key==='Enter'||event.key===' '){event.preventDefault();pvPlay(this,'${v.id}')}">
+      <img src="https://i.ytimg.com/vi/${v.id}/hqdefault.jpg" alt="Anteprima del video ${v.title}" loading="lazy"><span class="pv-play">▶</span></div>
+    <div class="pv-body"><span class="k">${v.k}</span><h3>${v.title}</h3><p>${v.sub}</p></div></div>`; }
+function promoVideosHtml(){ return `<section class="pv-sec" aria-label="Video dell'offerta formativa"><div class="pv-head"><h2>Guarda i nostri video</h2><span>L'offerta formativa in pochi minuti</span></div><div class="pv-grid">${PROMO_VIDEOS.map(pvCard).join('')}</div></section>`; }
+function promoVideoFor(group){ const v=PROMO_VIDEOS.find(v=>v.groups.includes(group)); return v ? `<h2 class="exp-title">Il video della nostra offerta formativa</h2><div class="pv-single">${pvCard(v)}</div>` : ''; }
+function pvPlay(el,id){ if(el.querySelector('iframe')) return; document.querySelectorAll('.pv-frame iframe').forEach(f=>{ if(!el.contains(f)){ const fr=f.parentNode; const v=PROMO_VIDEOS.find(x=>x.id===fr.dataset.vid); if(v){ fr.innerHTML=`<img src="https://i.ytimg.com/vi/${v.id}/hqdefault.jpg" alt="Anteprima del video ${v.title}"><span class="pv-play">▶</span>`; } } });
+  el.dataset.vid=id; el.innerHTML=`<iframe src="https://www.youtube-nocookie.com/embed/${id}?autoplay=1&rel=0&playsinline=1" title="Video offerta formativa" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>`; }
 const BROCHURE = { ready: true, pages: 28, v: '20261107b', pdf: 'Brochure_Licei_Aldo_Moro_2027-28.pdf' };
 function brochureHtml(){ if(!BROCHURE.ready) return ''; return `<a class="brochure-bn" href="#/" onclick="openBrochure();return false" aria-label="Sfoglia la nostra brochure">
       <span class="cv"><img src="brochure/cover.jpg?v=${BROCHURE.v}" alt="Copertina della brochure dei Licei Aldo Moro" loading="lazy"></span>
@@ -1559,6 +1589,7 @@ function renderHome(){
   <div class="wrap" style="padding-bottom:30px">
     ${dlManHtml()}
     ${brochureHtml()}
+    ${promoVideosHtml()}
   </div>
 
   <section class="hero" style="padding-block-start:52px">
@@ -1685,6 +1716,7 @@ function renderIndirizzo(slug){
         </div>
         <div class="cta-box"><div><h3>Info e iscrizioni</h3><p>Segreteria alunni IISS "A. Moro" — Via Gran Bretagna, 1, Trani · tel. 0883 584593. <b>Classe III:</b> conviene iscriversi presto, per raggiungere il numero minimo necessario a formare la nuova classe.</p></div><a class="btn btn-primary" href="mailto:btis058008@istruzione.it?subject=Iscrizione%20corso%20serale%20IDA">Scrivi alla segreteria</a></div>
       </div>` : ''}
+      ${promoVideoFor(item.group)}
       ${item.videos && item.videos.length ? `<h2 class="exp-title">Video dai laboratori</h2><div class="vid-strip">${item.videos.map(v=>`<video src="${v}.mp4" poster="${v}.jpg" controls playsinline preload="none" onplay="toggleVid(this)"></video>`).join('')}</div><p class="vid-hint">Premi play per guardare il video, accompagnato da una musica di sottofondo</p>` : ''}
       ${item.gallery && item.gallery.length ? `<h2 class="exp-title">Laboratori e attività</h2><div class="ind-gallery">${carousel('ind-car-'+item.slug, item.gallery)}</div>` : ''}
       ${INDIRIZZI.filter(c=>c.parent===item.slug).map(c=>`<a class="curv-box" href="#/indirizzo/${c.slug}" style="--accent:${g.accent}">
