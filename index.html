@@ -1494,7 +1494,7 @@ function quickLinksHtml(){
 
 const PROMO_VIDEOS = [
   { id:'cyHwQqGlSng', k:'Via Gran Bretagna · Via Salvemini', title:'Licei tecnologici e Liceo dell\'enogastronomia', sub:'ITES (AFM, SIA, RIM, Turismo), Alberghiero e Filiera 4+2: scopri ambienti, laboratori e attività.', color:'#109FAC', soft:'#E6F6F8', groups:['ITES','TURISMO','IPSEOA','FIL42','SERALE'] },
-  { id:'47MQkpTj01E', k:'Plesso «Sergio Cosmai» · Piazza Plebiscito', title:'Moda e Audiovisivo', sub:'Made in Italy e servizi culturali e dello spettacolo: atelier, set e laboratori del plesso Cosmai.', color:'#ED40F1', soft:'#FCE8FD', groups:['MODA','AV'] }
+  { id:'47MQkpTj01E', k:'Plesso «Sergio Cosmai» · Piazza Plebiscito', title:'Licei professionali: Moda e Audiovisivo', sub:'Made in Italy e servizi culturali e dello spettacolo: atelier, set e laboratori del plesso Cosmai.', color:'#ED40F1', soft:'#FCE8FD', groups:['MODA','AV'] }
 ];
 function pvCard(v){ return `<div class="pv-card" style="--pv:${v.color};--pv-soft:${v.soft}">
     <div class="pv-frame" role="button" tabindex="0" aria-label="Guarda il video: ${v.title}" onclick="pvPlay(this,'${v.id}')" onkeydown="if(event.key==='Enter'||event.key===' '){event.preventDefault();pvPlay(this,'${v.id}')}">
