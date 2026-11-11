@@ -1746,7 +1746,15 @@ function universitaHtml(){
           ['UniBa — Economia e Informatica (catalogo corsi)','https://www.uniba.it/it/corsi/cdl'],
           ['UniSalento — Dip. Scienze dell\'Economia','https://www.dse.unisalento.it/'],
           ['LUM — Economia e management','https://www.lum.it/'] ],
-        italia:[ ['Università Bocconi — lauree triennali','https://www.unibocconi.it/it/corsi-di-studio/lauree-triennali'] ] },
+        italia:[ ['Università Bocconi — lauree triennali','https://www.unibocconi.it/it/corsi-di-studio/lauree-triennali'],
+          ['Università Bocconi — ammissioni ai corsi triennali e a Giurisprudenza','https://www.unibocconi.it/it/entrare-bocconi/corsi-di-laurea-triennale-e-giurisprudenza/ammissione'] ],
+        video:{ t:'Video Bocconi', items:[
+          ['Bocconi. Knowledge that matters','https://www.youtube.com/watch?v=BwSuumgJWtA&list=PLNBlD2s94-0s13phTmFWeMlG-14hza2ll&index=10'],
+          ['Studiare economia, management e finanza in Bocconi','https://www.youtube.com/watch?v=WW8U0FQxhmc&list=PLNBlD2s94-0tefPdW7g5IQjhI9DmfCVIT&index=1'],
+          ['Studying Political Science at Bocconi','https://www.youtube.com/watch?v=lEos71G1ENM&list=PLNBlD2s94-0tefPdW7g5IQjhI9DmfCVIT&index=4'],
+          ['Studiare Giurisprudenza in Bocconi','https://www.youtube.com/watch?v=0xgVwJuVSys&list=PLNBlD2s94-0tefPdW7g5IQjhI9DmfCVIT&index=3'],
+          ['Campus Tour','https://www.youtube.com/watch?v=dauz8E2Qx9M&list=PLNBlD2s94-0s6SmzgFmBzysUDZc31OJl-'],
+          ['#BocconiLife. How to...?','https://www.youtube.com/playlist?list=PLNBlD2s94-0s2YdH83VOK_ifW2z58l2UG'] ] } },
       { t:'Turismo e lingue', g:'var(--green)', puglia:[
           ['UniBa — Lingue e turismo (catalogo corsi)','https://www.uniba.it/it/corsi/cdl'] ],
         italia:[ ['Università di Bologna — Economia del turismo e delle città (Rimini)','https://corsi.unibo.it/laurea/clet/il-corso'] ] },
@@ -1774,6 +1782,7 @@ function universitaHtml(){
         <h4>${g.t}</h4>
         ${g.puglia?`<div class="uni-sub">In Puglia</div><div class="uni-links">${g.puglia.map(([t,u])=>L(t,u)).join('')}</div>`:''}
         ${g.italia?`<div class="uni-sub">In Italia</div><div class="uni-links">${g.italia.map(([t,u])=>L(t,u)).join('')}</div>`:''}
+        ${g.video?`<div class="uni-sub">${g.video.t}</div><div class="uni-links">${g.video.items.map(([t,u])=>L('&#9654; '+t,u)).join('')}</div>`:''}
       </div>`).join('')}</div>
       <p class="uni-note">I collegamenti aprono i siti ufficiali degli atenei in una nuova scheda. Accademie e Centro Sperimentale di Cinematografia sono istituti di alta formazione artistica, non università.</p>
     </div>`;
