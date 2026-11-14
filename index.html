@@ -290,6 +290,8 @@ nav.main-nav a.nav-cta:hover, nav.main-nav a.nav-cta.active{background:var(--tea
 .dl-man .b{display:inline-flex; align-items:center; gap:8px; background:#FDB300; color:var(--navy-900); font-weight:800; font-size:.9rem; padding:12px 18px; border-radius:12px; white-space:nowrap}
 .dl-man .b svg{width:18px; height:18px}
 .dl-man:hover .b{filter:brightness(1.06)}
+.lab-video{margin-top:16px; border-radius:18px; overflow:hidden; box-shadow:var(--shadow); background:#000; line-height:0}
+.lab-video video{display:block; width:100%; height:auto; aspect-ratio:16/9}
 /* ---------- home: copertina video ---------- */
 .vhero{position:relative; padding:0; margin:0; display:grid; grid-template-columns:minmax(0,1fr) minmax(0,1.05fr); min-height:clamp(380px,38vw,520px); background:#002A64; color:#fff; overflow:hidden; isolation:isolate}
 .vhero-media{position:relative; grid-column:2; grid-row:1; min-height:100%}
@@ -1579,6 +1581,7 @@ function openLabVideo(){
   }
   ov.hidden=false; document.body.style.overflow='hidden';
   const bg=document.querySelector('.vhero-vid'); if(bg) bg.pause();
+  const inl=document.querySelector('.lab-video video'); if(inl) inl.pause();
   const v=ov.querySelector('video'); v.muted=false; const pr=v.play(); if(pr&&pr.catch) pr.catch(()=>{});
   ov.querySelector('.labv-x').focus();
 }
@@ -1650,6 +1653,7 @@ function renderHome(){
   ${quickLinksHtml()}
   <div class="wrap" style="padding-bottom:30px">
     ${dlManHtml()}
+    <div class="lab-video"><video src="video-laboratori-2026-27.mp4?v=20261114" poster="video-laboratori-2026-27.jpg?v=20261114" controls playsinline preload="none" aria-label="Video di presentazione di Open days e laboratori didattici 2026/2027"></video></div>
     ${brochureHtml()}
     ${promoVideosHtml()}
   </div>
