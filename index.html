@@ -290,6 +290,8 @@ nav.main-nav a.nav-cta:hover, nav.main-nav a.nav-cta.active{background:var(--tea
 .dl-man .b{display:inline-flex; align-items:center; gap:8px; background:#FDB300; color:var(--navy-900); font-weight:800; font-size:.9rem; padding:12px 18px; border-radius:12px; white-space:nowrap}
 .dl-man .b svg{width:18px; height:18px}
 .dl-man:hover .b{filter:brightness(1.06)}
+.lab-video{margin-top:16px; border-radius:18px; overflow:hidden; box-shadow:var(--shadow); background:#000; line-height:0}
+.lab-video video{display:block; width:100%; height:auto; aspect-ratio:16/9}
 @media (max-width:640px){.dl-man{grid-template-columns:auto 1fr}.dl-man .b{grid-column:1 / -1; justify-self:start}}
 .od-mod{margin-top:6px}
 .od-lead{max-width:62ch; color:var(--text-muted); font-size:1rem; line-height:1.6}
@@ -1588,6 +1590,7 @@ function renderHome(){
   ${quickLinksHtml()}
   <div class="wrap" style="padding-bottom:30px">
     ${dlManHtml()}
+    <div class="lab-video"><video src="video-laboratori-2026-27.mp4?v=20261114" poster="video-laboratori-2026-27.jpg?v=20261114" controls playsinline preload="none" aria-label="Video di presentazione di Open days e laboratori didattici 2026/2027"></video></div>
     ${brochureHtml()}
     ${promoVideosHtml()}
   </div>
