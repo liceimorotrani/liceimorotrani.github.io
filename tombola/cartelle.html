@@ -59,7 +59,7 @@ footer{text-align:center;color:#7a8aa8;font-size:12px;padding:16px 0 30px}
   <footer>IISS "Aldo Moro – S. Cosmai" · Trani</footer>
 </main>
 <script src="lib/jspdf.umd.min.js"></script>
-<script src="common.js?v=2611212200"></script>
+<script src="common.js?v=2611212210"></script>
 <script>
 const $ = s => document.querySelector(s);
 const p = new URLSearchParams(location.hash.slice(1) || location.search.slice(1));
@@ -98,7 +98,7 @@ $('#cartelle').addEventListener('click', e => {
   el.closest('.cartella').querySelector('.cont').textContent = s.size + '/15 segnati';
   if (navigator.vibrate) navigator.vibrate(15);
 });
-$('#pulisci').onclick = () => { if (confirm('Togliere tutti i segni dalle cartelle?')) { segni = {}; salva(); disegna(); } };
+$('#pulisci').onclick = async () => { if (await chiedi('Togliere tutti i segni dalle cartelle?', { si: 'Togli i segni' })) { segni = {}; salva(); disegna(); } };
 
 async function immagine(src) {
   return new Promise(res => {

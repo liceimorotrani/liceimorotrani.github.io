@@ -162,7 +162,7 @@ footer{text-align:center;color:#7a8aa8;font-size:12px;padding:10px 0 30px}
 </main>
 
 <script src="lib/qrcode.js"></script>
-<script src="common.js?v=2611212200"></script>
+<script src="common.js?v=2611212210"></script>
 <script>
 const $ = s => document.querySelector(s);
 const scelta = { tipo: 'alunno', classe: '', sezione: '', indirizzo: '', quante: '2' };
@@ -306,7 +306,7 @@ $('#cerca').addEventListener('input', mostraLista);
 $('#listaCartelle').addEventListener('click', async ev => {
   const b = ev.target.closest('button[data-k]'); if (!b) return;
   const g = gruppi[+b.dataset.k];
-  if (!confirm(`Eliminare le ${g.codici.length} cartelle di ${g.cognome} ${g.nome} (${g.classe} ${INDIRIZZI[g.indirizzo]?.nome || ''})?\n\nLe cartelle non varranno più per la tombola.`)) return;
+  if (!(await chiedi(`Eliminare le ${g.codici.length} cartelle di ${g.cognome} ${g.nome} (${g.classe} ${INDIRIZZI[g.indirizzo]?.nome || ''})?\n\nLe cartelle non varranno più per la tombola.`, { si: 'Elimina', pericolo: true }))) return;
   b.disabled = true; b.textContent = '…';
   try {
     const r = await Archivio.elimina($('#pin').value.trim(), g.codici);
@@ -318,7 +318,7 @@ $('#listaCartelle').addEventListener('click', async ev => {
 
 $('#archivia').onclick = async () => {
   const e = $('#errArch'); e.textContent = '';
-  if (!confirm('Archiviare TUTTE le cartelle generate finora?\nIl tabellone non le considererà più (restano nel foglio Google, in un foglio “Archivio”).')) return;
+  if (!(await chiedi('Archiviare TUTTE le cartelle generate finora?\nIl tabellone non le considererà più (restano nel foglio Google, in un foglio “Archivio”).', { si: 'Archivia', pericolo: true }))) return;
   try { const r = await Archivio.archivia($('#pin').value.trim()); e.textContent = r.ok ? `Fatto: ${r.archiviate} cartelle archiviate.` : (r.errore || 'Errore'); }
   catch (x) { e.textContent = 'Connessione assente. Riprova.'; }
 };

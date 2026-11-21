@@ -232,3 +232,25 @@ function numeroInLettere(n) {
 }
 
 function esc(s) { return String(s ?? '').replace(/[&<>"']/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c])); }
+
+/* Finestra di conferma disegnata nella pagina (al posto di confirm(), che alcuni browser bloccano) */
+function chiedi(testo, opz = {}) {
+  return new Promise(ok => {
+    const v = document.createElement('div');
+    v.className = 'chiedi';
+    v.setAttribute('style', 'position:fixed;inset:0;z-index:1000;background:rgba(0,16,42,.72);display:flex;align-items:center;justify-content:center;padding:20px;cursor:default');
+    const lines = esc(testo).replace(/\n/g, '<br>');
+    v.innerHTML = `<div role="dialog" aria-modal="true" style="background:#fff;color:#0d1b33;border-radius:18px;max-width:460px;width:100%;padding:24px 22px 18px;box-shadow:0 20px 60px rgba(0,0,0,.4);font:500 clamp(17px,2.3vh,26px)/1.45 Inter,system-ui,sans-serif;max-width:min(620px,92vw)">
+      <div style="margin-bottom:18px">${lines}</div>
+      <div style="display:flex;gap:10px;justify-content:flex-end;flex-wrap:wrap">
+        <button data-r="0" style="border:2px solid #002A64;background:#fff;color:#002A64;border-radius:12px;padding:11px 18px;font:700 16px Poppins,Inter,sans-serif;cursor:pointer">${esc(opz.no || 'Annulla')}</button>
+        <button data-r="1" style="border:0;background:${opz.pericolo ? '#FE114A' : '#FDB300'};color:${opz.pericolo ? '#fff' : '#002A64'};border-radius:12px;padding:11px 18px;font:800 16px Poppins,Inter,sans-serif;cursor:pointer">${esc(opz.si || 'Conferma')}</button>
+      </div></div>`;
+    const fine = r => { document.removeEventListener('keydown', tasti, true); v.remove(); ok(r); };
+    const tasti = e => { e.stopPropagation(); if (e.key === 'Escape') { e.preventDefault(); fine(false); } else if (e.key === 'Enter') { e.preventDefault(); fine(true); } };
+    v.addEventListener('click', e => { e.stopPropagation(); const b = e.target.closest('button[data-r]'); if (b) fine(b.dataset.r === '1'); });
+    document.addEventListener('keydown', tasti, true);
+    (document.fullscreenElement || document.body).appendChild(v);
+    setTimeout(() => v.querySelector('button[data-r="1"]').focus(), 30);
+  });
+}

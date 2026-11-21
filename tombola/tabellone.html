@@ -208,7 +208,7 @@ canvas#coriandoli{position:fixed;inset:0;width:100vw;height:100vh;pointer-events
   <button id="avvioVai">Inizia</button>
 </div>
 
-<script src="common.js?v=2611212200"></script>
+<script src="common.js?v=2611212210"></script>
 <script>
 const $ = s => document.querySelector(s);
 const TIPI = { '2': 'Ambo', '3': 'Terno', '4': 'Quaterna', '5': 'Cinquina', 'T': 'Tombola', 'T2': 'Seconda tombola' };
@@ -401,12 +401,12 @@ function annullaVincita(pi, codice) {
   const ora = assegnati[pi];
   return { nomeP, ora, cambiato: !prima || !ora || prima.estrazione !== ora.estrazione || prima.vincitori.length !== ora.vincitori.length };
 }
-$('#vinciBox').addEventListener('click', e => {
+$('#vinciBox').addEventListener('click', async e => {
   const b = e.target.closest('button.assente'); if (!b) return;
   e.stopPropagation();
   const v = vincitaAperta; if (!v) return;
   const c = cartelle.find(x => x.codice === b.dataset.c);
-  if (!confirm(`${c ? c.nome + ' ' + c.cognome : 'Il vincitore'} non è presente o non reclama il premio.\n\nAnnullare la sua vincita? Il premio torna in palio.`)) return;
+  if (!(await chiedi(`${c ? c.nome + ' ' + c.cognome : 'Il vincitore'} non è presente o non reclama il premio.\n\nAnnullare la sua vincita? Il premio torna in palio.`, { si: 'Sì, annulla la vincita', pericolo: true }))) return;
   const r = annullaVincita(v.pi, b.dataset.c);
   if (!r.ora) { chiudiVincita(); toast(`Vincita annullata: ${r.nomeP.toUpperCase()} di nuovo in palio`); parla(`Vincita annullata. ${r.nomeP} di nuovo in palio`); return; }
   // restano altri vincitori a pari merito, oppure il premio passa subito a chi l'aveva già fatto
@@ -465,7 +465,7 @@ $('#righePremi').addEventListener('click', e => {
   righePremi();
 });
 $('#aggiungi').onclick = () => { leggiRighe(); premi.push({ nome: '', tipo: '2', premio: '' }); righePremi(); };
-$('#predef').onclick = () => { if (confirm('Ripristinare i premi standard? I testi dei premi verranno cancellati.')) { premi = JSON.parse(JSON.stringify(PREMI_STANDARD)); righePremi(); } };
+$('#predef').onclick = async () => { if (await chiedi('Ripristinare i premi standard? I testi dei premi verranno cancellati.', { si: 'Ripristina' })) { premi = JSON.parse(JSON.stringify(PREMI_STANDARD)); righePremi(); } };
 function apriImp() {
   righePremi(); $('#oSmorfia').checked = opz.smorfia; $('#oVoceSmorfia').checked = opz.voceSmorfia; $('#oPin').value = pin;
   $('#infoArchivio').textContent = Archivio.modalitaProva ? 'Modalità prova: le cartelle arrivano da questo browser (pagina Genera aperta su questo PC).' : `Cartelle caricate dal foglio Google: ${cartelle.length}. Si aggiornano da sole ogni 45 secondi.`;
@@ -481,7 +481,7 @@ $('#listaAnnullati').addEventListener('click', e => {
   stato.annullati.splice(+b.dataset.rip, 1); salvaStato(); disegnaAnnullati(); aggiornaVista();
 });
 $('#ricarica').onclick = async () => { pin = $('#oPin').value.trim(); LS.set('tombola_pin_tab', pin); $('#msgImp').textContent = 'Carico…'; const ok = await caricaCartelle(true); $('#msgImp').textContent = ok ? `Fatto: ${cartelle.length} cartelle.` : 'Non riesco a caricare: controlla il codice operatore e la connessione.'; };
-$('#nuova').onclick = () => { if (confirm('Iniziare una NUOVA PARTITA? Tutti i numeri estratti verranno azzerati.')) { stato = { estratti: [], annullati: [] }; salvaStato(); aggiornaVista(); $('#modale').classList.remove('on'); toast('Nuova partita!'); } };
+$('#nuova').onclick = async () => { if (await chiedi('Iniziare una NUOVA PARTITA?\nTutti i numeri estratti verranno azzerati.', { si: 'Sì, nuova partita', pericolo: true })) { stato = { estratti: [], annullati: [] }; salvaStato(); aggiornaVista(); $('#modale').classList.remove('on'); toast('Nuova partita!'); } };
 $('#chiudi').onclick = () => { leggiRighe(); salvaPremi(); opz.smorfia = $('#oSmorfia').checked; opz.voceSmorfia = $('#oVoceSmorfia').checked; salvaOpz(); $('#modale').classList.remove('on'); aggiornaVista(); };
 
 /* ---------- tasti ---------- */
@@ -492,9 +492,9 @@ $('#tAnnulla').onclick = e => { e.stopPropagation(); annulla(); };
 $('#tImpost').onclick = e => { e.stopPropagation(); apriImp(); };
 $('#tCartelle').onclick = e => { e.stopPropagation(); caricaCartelle(false); };
 $('#tSchermo').onclick = e => { e.stopPropagation(); if (document.fullscreenElement) document.exitFullscreen(); else document.documentElement.requestFullscreen().catch(() => {}); };
-function annulla() {
+async function annulla() {
   const n = stato.estratti[stato.estratti.length - 1]; if (!n) return toast('Nessun numero da annullare');
-  if (!confirm(`Annullare l'ultimo numero estratto (${n})?`)) return;
+  if (!(await chiedi(`Annullare l'ultimo numero estratto (${n})?`, { si: 'Sì, annulla' }))) return;
   stato.estratti.pop(); salvaStato(); aggiornaVista(); toast(`Numero ${n} annullato`);
 }
 function azione() {
@@ -503,9 +503,9 @@ function azione() {
   if ($('#velo').classList.contains('on')) { if (!occupato) chiudiVelo(); return; }
   estrai();
 }
-document.body.addEventListener('click', e => { if (e.target.closest('.tasti,.modale,.avvio')) return; azione(); });
+document.body.addEventListener('click', e => { if (e.target.closest('.tasti,.modale,.avvio,.chiedi')) return; azione(); });
 document.addEventListener('keydown', e => {
-  if (e.target.matches('input,select,textarea')) return;
+  if (e.target.matches('input,select,textarea') || document.querySelector('.chiedi')) return;
   if ([' ', 'Enter', 'PageDown', 'ArrowRight', 'ArrowDown'].includes(e.key)) { e.preventDefault(); azione(); }
   else if (e.key === 'z' && (e.ctrlKey || e.metaKey)) { e.preventDefault(); annulla(); }
   else if (e.key === 'f' || e.key === 'F') $('#tSchermo').click();
