@@ -44,6 +44,7 @@ function doGet(e) {
   if (p.azione === 'prova') return risposta_({ ok: true, messaggio: 'Tombola Moro: script attivo' });
   if (p.pin !== PIN) return risposta_({ ok: false, errore: 'Codice operatore errato' });
   if (p.azione === 'elenco') return risposta_({ ok: true, cartelle: righe_() });
+  if (p.azione === 'alunni') return risposta_({ ok: true, alunni: alunni_() });
   return risposta_({ ok: false, errore: 'Azione sconosciuta' });
 }
 
@@ -57,6 +58,7 @@ function doPost(e) {
   try {
     if (d.azione === 'crea') return risposta_(crea_(d));
     if (d.azione === 'archivia') return risposta_(archivia_());
+    if (d.azione === 'caricaAlunni') return risposta_(caricaAlunni_(d));
     return risposta_({ ok: false, errore: 'Azione sconosciuta' });
   } finally {
     lock.releaseLock();
@@ -97,4 +99,31 @@ function archivia_() {
   sh.copyTo(SpreadsheetApp.getActiveSpreadsheet()).setName(nome);
   sh.getRange(2, 1, n, 6).clearContent();
   return { ok: true, archiviate: n };
+}
+
+// ===== Elenco alunni (dal registro) per il menu a tendina del generatore =====
+const FOGLIO_ALUNNI = 'Alunni';
+function foglioAlunni_() {
+  const ss = SpreadsheetApp.getActiveSpreadsheet();
+  let sh = ss.getSheetByName(FOGLIO_ALUNNI);
+  if (!sh) {
+    sh = ss.insertSheet(FOGLIO_ALUNNI);
+    sh.appendRow(['Classe', 'Sezione', 'Indirizzo', 'Cognome', 'Nome']);
+    sh.getRange(1, 1, 1, 5).setFontWeight('bold').setBackground('#002A64').setFontColor('#ffffff');
+    sh.setFrozenRows(1);
+  }
+  return sh;
+}
+function alunni_() {
+  const sh = foglioAlunni_();
+  const n = sh.getLastRow() - 1;
+  if (n < 1) return [];
+  return sh.getRange(2, 1, n, 5).getValues().map(r => r.map(String));
+}
+function caricaAlunni_(d) {
+  const righe = (d.righe || []).filter(r => Array.isArray(r) && r.length === 5).map(r => r.map(x => pulisci_(x, 60)));
+  const sh = foglioAlunni_();
+  if (d.svuota) { const n = sh.getLastRow() - 1; if (n > 0) sh.getRange(2, 1, n, 5).clearContent(); }
+  if (righe.length) sh.getRange(sh.getLastRow() + 1, 1, righe.length, 5).setValues(righe);
+  return { ok: true, caricati: righe.length };
 }
