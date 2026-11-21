@@ -112,6 +112,11 @@ const Archivio = {
     return fetch(TOMBOLA_SCRIPT_URL + '?azione=alunni&pin=' + encodeURIComponent(pin) + '&t=' + Date.now()).then(r => r.json());
   },
 
+  async elimina(pin, codici) {
+    if (this.modalitaProva) { const s = new Set(codici); const a = this._locale(); this._salvaLocale(a.filter(x => !s.has(x.codice))); return { ok: true, eliminate: a.filter(x => s.has(x.codice)).length }; }
+    return fetch(TOMBOLA_SCRIPT_URL, { method: 'POST', headers: { 'Content-Type': 'text/plain;charset=utf-8' }, body: JSON.stringify({ azione: 'elimina', pin, codici }) }).then(r => r.json());
+  },
+
   async archivia(pin) {
     if (this.modalitaProva) { const a = this._locale(); localStorage.setItem('tombola_archivio_prova_' + Date.now(), JSON.stringify(a)); this._salvaLocale([]); return { ok: true, archiviate: a.length }; }
     return fetch(TOMBOLA_SCRIPT_URL, { method: 'POST', headers: { 'Content-Type': 'text/plain;charset=utf-8' }, body: JSON.stringify({ azione: 'archivia', pin }) }).then(r => r.json());

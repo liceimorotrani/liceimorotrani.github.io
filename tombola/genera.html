@@ -55,6 +55,12 @@ select#alunno{width:100%;font:inherit;font-size:18px;padding:12px 10px;border:2p
 details{margin-top:6px}
 summary{cursor:pointer;color:#58698a;font-size:14px;font-weight:600}
 footer{text-align:center;color:#7a8aa8;font-size:12px;padding:10px 0 30px}
+.riepilogo{font-size:14px;color:#40527a;margin:10px 0 6px;font-weight:600}
+.alunnoRiga{display:flex;align-items:center;gap:10px;padding:10px 0;border-bottom:1px solid #EAF0F8}
+.alunnoRiga .chiR{flex:1;min-width:0}
+.alunnoRiga .chiR b{display:block;font-size:16px;color:#002A64}
+.alunnoRiga .chiR small{display:block;color:#58698a;font-size:13px;margin-top:2px}
+.alunnoRiga button{border:0;border-radius:10px;padding:10px 12px;font:700 14px Inter,sans-serif;background:#FFE5EA;color:#c0002a;cursor:pointer;white-space:nowrap}
 .hidden{display:none!important}
 </style>
 </head>
@@ -109,6 +115,18 @@ footer{text-align:center;color:#7a8aa8;font-size:12px;padding:10px 0 30px}
       <button class="btn" id="genera">Genera le cartelle</button>
       <div class="err" id="err"></div>
     </div>
+
+    <details id="gestione">
+      <summary>Gestisci cartelle (per il prof)</summary>
+      <div class="card" style="margin-top:10px">
+        <p class="istr" style="margin-top:0">Elenco degli alunni che hanno prenotato le cartelle. Se un alunno <b>non ha pagato</b>, tocca <b>Elimina</b>: le sue cartelle escono dal gioco (restano annotate nel foglio “Eliminate”).</p>
+        <input id="cerca" type="text" placeholder="🔎 Cerca per nome o classe" autocomplete="off" style="margin-top:10px">
+        <div class="riepilogo" id="riepilogo"></div>
+        <div id="listaCartelle"></div>
+        <button class="btn sec" id="aggiornaLista">🔄 Aggiorna elenco</button>
+        <div class="err" id="errLista"></div>
+      </div>
+    </details>
 
     <details>
       <summary>Altre funzioni (per il prof)</summary>
@@ -245,6 +263,45 @@ $('#nuovo').onclick = () => {
   if ($('#alunno').options.length) $('#alunno').value = ''; aggiornaElenco();
   mostraForm(); window.scrollTo(0, 0); if ($('#boxElenco').classList.contains('hidden')) setTimeout(() => $('#nome').focus(), 50);
 };
+/* ---- gestione cartelle (eliminazione di chi non ha pagato) ---- */
+let gruppi = [];
+async function caricaLista() {
+  const e = $('#errLista'); e.textContent = '';
+  const pin = $('#pin').value.trim();
+  if (!Archivio.modalitaProva && !pin) { e.textContent = 'Inserisci prima il codice operatore (in alto).'; return; }
+  $('#riepilogo').textContent = 'Carico…';
+  try {
+    const r = await Archivio.elenco(pin);
+    if (!r.ok) { $('#riepilogo').textContent = ''; e.textContent = r.errore || 'Errore'; return; }
+    const m = new Map();
+    r.cartelle.forEach(c => { const k = [c.cognome, c.nome, c.classe, c.indirizzo].join('|'); if (!m.has(k)) m.set(k, { ...c, codici: [] }); m.get(k).codici.push(c.codice); });
+    gruppi = [...m.values()].sort((a, b) => (a.cognome + ' ' + a.nome).localeCompare(b.cognome + ' ' + b.nome, 'it'));
+    mostraLista();
+  } catch (x) { $('#riepilogo').textContent = ''; e.textContent = 'Connessione assente. Riprova.'; }
+}
+function mostraLista() {
+  const q = $('#cerca').value.trim().toLowerCase();
+  const vis = gruppi.filter(g => !q || [g.cognome, g.nome, g.classe, INDIRIZZI[g.indirizzo]?.nome].join(' ').toLowerCase().includes(q));
+  const tot = gruppi.reduce((s, g) => s + g.codici.length, 0);
+  $('#riepilogo').textContent = `${gruppi.length} alunni · ${tot} cartelle prenotate` + (q ? ` · ${vis.length} trovati` : '');
+  $('#listaCartelle').innerHTML = vis.map(g => `<div class="alunnoRiga"><div class="chiR"><b>${esc(g.cognome + ' ' + g.nome)}</b><small>${esc(g.classe)} ${esc(INDIRIZZI[g.indirizzo]?.nome || g.indirizzo)} · ${g.codici.length} ${g.codici.length === 1 ? 'cartella' : 'cartelle'} (${g.codici.join(', ')})</small></div><button data-k="${gruppi.indexOf(g)}">🗑️ Elimina</button></div>`).join('') || (gruppi.length ? '<p class="istr">Nessun risultato.</p>' : '<p class="istr">Nessuna cartella prenotata.</p>');
+}
+$('#gestione').addEventListener('toggle', () => { if ($('#gestione').open) caricaLista(); });
+$('#aggiornaLista').onclick = caricaLista;
+$('#cerca').addEventListener('input', mostraLista);
+$('#listaCartelle').addEventListener('click', async ev => {
+  const b = ev.target.closest('button[data-k]'); if (!b) return;
+  const g = gruppi[+b.dataset.k];
+  if (!confirm(`Eliminare le ${g.codici.length} cartelle di ${g.cognome} ${g.nome} (${g.classe} ${INDIRIZZI[g.indirizzo]?.nome || ''})?\n\nLe cartelle non varranno più per la tombola.`)) return;
+  b.disabled = true; b.textContent = '…';
+  try {
+    const r = await Archivio.elimina($('#pin').value.trim(), g.codici);
+    if (!r.ok) { $('#errLista').textContent = r.errore || 'Errore'; b.disabled = false; b.textContent = '🗑️ Elimina'; return; }
+    await caricaLista();
+    $('#errLista').innerHTML = `<span style="color:#0b7a3e">✓ Eliminate le cartelle di ${esc(g.cognome + ' ' + g.nome)} (${r.eliminate}).</span>`;
+  } catch (x) { $('#errLista').textContent = 'Connessione assente. Riprova.'; b.disabled = false; b.textContent = '🗑️ Elimina'; }
+});
+
 $('#archivia').onclick = async () => {
   const e = $('#errArch'); e.textContent = '';
   if (!confirm('Archiviare TUTTE le cartelle generate finora?\nIl tabellone non le considererà più (restano nel foglio Google, in un foglio “Archivio”).')) return;

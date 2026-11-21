@@ -59,6 +59,8 @@ function doPost(e) {
     if (d.azione === 'crea') return risposta_(crea_(d));
     if (d.azione === 'archivia') return risposta_(archivia_());
     if (d.azione === 'caricaAlunni') return risposta_(caricaAlunni_(d));
+    if (d.azione === 'elimina') return risposta_(elimina_(d));
+    if (d.azione === 'pulisciTutto' && d.conferma === 'CANCELLA TUTTO') return risposta_(pulisciTutto_());
     return risposta_({ ok: false, errore: 'Azione sconosciuta' });
   } finally {
     lock.releaseLock();
@@ -126,4 +128,41 @@ function caricaAlunni_(d) {
   if (d.svuota) { const n = sh.getLastRow() - 1; if (n > 0) sh.getRange(2, 1, n, 5).clearContent(); }
   if (righe.length) sh.getRange(sh.getLastRow() + 1, 1, righe.length, 5).setValues(righe);
   return { ok: true, caricati: righe.length };
+}
+
+// ===== Eliminazione cartelle (es. alunno che non ha pagato) =====
+const FOGLIO_ELIMINATE = 'Eliminate';
+function elimina_(d) {
+  const codici = new Set((d.codici || []).map(String));
+  if (!codici.size) return { ok: false, errore: 'Nessuna cartella indicata' };
+  const sh = foglio_();
+  const n = sh.getLastRow() - 1;
+  if (n < 1) return { ok: true, eliminate: 0 };
+  const val = sh.getRange(2, 1, n, 6).getValues();
+  const tolte = [];
+  for (let i = val.length - 1; i >= 0; i--) {
+    if (codici.has(String(val[i][1]))) { tolte.push(val[i]); sh.deleteRow(i + 2); }
+  }
+  if (tolte.length) {
+    const ss = SpreadsheetApp.getActiveSpreadsheet();
+    let el = ss.getSheetByName(FOGLIO_ELIMINATE);
+    if (!el) {
+      el = ss.insertSheet(FOGLIO_ELIMINATE);
+      el.appendRow(['Eliminata il'].concat(INTESTAZIONE));
+      el.getRange(1, 1, 1, 7).setFontWeight('bold').setBackground('#FE114A').setFontColor('#ffffff');
+      el.setFrozenRows(1);
+    }
+    const ora = new Date();
+    el.getRange(el.getLastRow() + 1, 1, tolte.length, 7).setValues(tolte.reverse().map(r => [ora].concat(r)));
+  }
+  return { ok: true, eliminate: tolte.length };
+}
+// Cancella tutte le cartelle (anche dal foglio Eliminate): solo per ripulire le prove
+function pulisciTutto_() {
+  const sh = foglio_();
+  const n = sh.getLastRow() - 1;
+  if (n > 0) sh.getRange(2, 1, n, 6).clearContent();
+  const el = SpreadsheetApp.getActiveSpreadsheet().getSheetByName(FOGLIO_ELIMINATE);
+  if (el && el.getLastRow() > 1) el.getRange(2, 1, el.getLastRow() - 1, 7).clearContent();
+  return { ok: true, cancellate: Math.max(n, 0) };
 }

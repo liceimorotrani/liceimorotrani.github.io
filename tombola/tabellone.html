@@ -96,6 +96,7 @@ body{font-family:Inter,system-ui,sans-serif;background:radial-gradient(120% 90% 
 .mini b.v{background:rgba(255,255,255,.15)}
 .mini b.x{background:var(--gold)}
 .mini b.r{outline:.35vh solid var(--green);outline-offset:-.1vh}
+.vinci .assente{margin-top:1vh;background:rgba(255,255,255,.12);color:#FFB3C1;border:1px solid rgba(255,157,176,.5);border-radius:1vh;padding:.8vh 1.4vw;font:700 1.8vh Inter,sans-serif;cursor:pointer}.vinci .assente:hover{background:rgba(254,17,74,.35);color:#fff}
 .continua{margin-top:1.8vh;font:600 1.8vh Inter,sans-serif;color:rgba(255,255,255,.55)}
 canvas#coriandoli{position:fixed;inset:0;width:100vw;height:100vh;pointer-events:none;z-index:25}
 /* impostazioni */
@@ -188,6 +189,9 @@ canvas#coriandoli{position:fixed;inset:0;width:100vw;height:100vh;pointer-events
     <div class="opz"><label style="flex:1">Codice operatore <input class="campo" id="oPin" type="password" style="max-width:260px"></label></div>
     <div class="bott"><button id="ricarica">🔄 Ricarica cartelle</button></div>
     <div class="msg" id="msgImp"></div>
+    <h3>Vincite annullate</h3>
+    <p class="n">Vincite annullate perché il vincitore non era presente. Se si presenta dopo, puoi ripristinarle.</p>
+    <div id="listaAnnullati"></div>
     <h3>Partita</h3>
     <div class="bott"><button class="peric" id="nuova">🔁 Nuova partita (azzera i numeri estratti)</button></div>
     <div class="bott" style="justify-content:flex-end;margin-top:24px"><button class="prim" id="chiudi">Salva e chiudi</button></div>
@@ -221,6 +225,7 @@ const LS = {
   set(k, v) { try { localStorage.setItem(k, JSON.stringify(v)); } catch (e) {} }
 };
 let stato = LS.get('tombola_partita', null) || { estratti: [] };
+if (!stato.annullati) stato.annullati = [];
 let premi = LS.get('tombola_premi', null) || JSON.parse(JSON.stringify(PREMI_STANDARD));
 let opz = Object.assign({ voce: true, suoni: true, smorfia: true, voceSmorfia: true }, LS.get('tombola_opzioni', {}));
 let pin = LS.get('tombola_pin_tab', '');
@@ -268,6 +273,8 @@ function calcolaVincite() {
   cartelle.forEach((c, i) => c.griglia.forEach((r, ri) => r.forEach(n => { if (n) { if (!pos.has(n)) pos.set(n, []); pos.get(n).push([i, ri]); } })));
   const ris = premi.map(() => null);
   const vincitoriTombola = new Set();
+  const escl = new Set((stato.annullati || []).map(x => x.p + '|' + x.c));
+  const fuori = (pi, i) => escl.has(pi + '|' + cartelle[i].codice);
   e.forEach((n, k) => {
     for (const [i, ri] of (pos.get(n) || [])) conta[i][ri]++;
     premi.forEach((p, pi) => {
@@ -275,13 +282,13 @@ function calcolaVincite() {
       const v = [];
       if (['2', '3', '4', '5'].includes(p.tipo)) {
         const soglia = +p.tipo;
-        conta.forEach((cc, i) => { const ri = cc.findIndex(x => x >= soglia); if (ri >= 0) v.push({ i, riga: ri }); });
+        conta.forEach((cc, i) => { if (fuori(pi, i)) return; const ri = cc.findIndex(x => x >= soglia); if (ri >= 0) v.push({ i, riga: ri }); });
       } else if (p.tipo === 'T') {
-        conta.forEach((cc, i) => { if (cc[0] + cc[1] + cc[2] === 15) v.push({ i, riga: -1 }); });
+        conta.forEach((cc, i) => { if (!fuori(pi, i) && cc[0] + cc[1] + cc[2] === 15) v.push({ i, riga: -1 }); });
       } else if (p.tipo === 'T2') {
         const pt = premi.findIndex(q => q.tipo === 'T');
         if (pt < 0 || !ris[pt] || ris[pt].estrazione === k) return;
-        conta.forEach((cc, i) => { if (cc[0] + cc[1] + cc[2] === 15 && !vincitoriTombola.has(i)) v.push({ i, riga: -1 }); });
+        conta.forEach((cc, i) => { if (!fuori(pi, i) && cc[0] + cc[1] + cc[2] === 15 && !vincitoriTombola.has(i)) v.push({ i, riga: -1 }); });
       }
       if (v.length) { ris[pi] = { estrazione: k, vincitori: v }; if (p.tipo === 'T') v.forEach(x => vincitoriTombola.add(x.i)); }
     });
@@ -348,7 +355,7 @@ function estrai() {
     stato.estratti.push(n); salvaStato();
     setTimeout(() => parla(numeroInLettere(n) + (opz.voceSmorfia && opz.smorfia ? '. ' + SMORFIA[n][1] : '')), 350);
     const dopo = calcolaVincite();
-    codaVincite = premi.map((p, pi) => (!prima[pi] && dopo[pi]) ? { p, a: dopo[pi] } : null).filter(Boolean);
+    codaVincite = premi.map((p, pi) => (!prima[pi] && dopo[pi]) ? { p, a: dopo[pi], pi } : null).filter(Boolean);
     occupato = false;
     timerVelo = setTimeout(chiudiVelo, codaVincite.length ? 2600 : 4200);
   }, 1300);
@@ -364,20 +371,48 @@ function miniCartella(c, riga) {
   const s = new Set(stato.estratti);
   return '<div class="mini">' + c.griglia.map((r, ri) => r.map(n => n ? `<b class="${s.has(n) ? 'x' : ''}${ri === riga ? ' r' : ''}">${n}</b>` : '<b class="v"></b>').join('')).join('') + '</div>';
 }
+let vincitaAperta = null;
 function prossimaVincita() {
   const v = codaVincite.shift(); if (!v) return;
+  mostraVincita(v, true);
+}
+function mostraVincita(v, annuncia) {
+  vincitaAperta = v;
   const { p, a } = v, nomeP = p.nome || TIPI[p.tipo];
   const lista = a.vincitori.slice(0, 4).map(x => {
     const c = cartelle[x.i];
-    return `<div><div class="chi">${esc(nomeCorto(c))}<small>${esc(classeInd(c))} · cartella n. ${esc(c.codice)}</small></div>${a.vincitori.length <= 2 ? miniCartella(c, x.riga) : ''}</div>`;
+    return `<div><div class="chi">${esc(nomeCorto(c))}<small>${esc(classeInd(c))} · cartella n. ${esc(c.codice)}</small></div>${a.vincitori.length <= 2 ? miniCartella(c, x.riga) : ''}<div><button class="assente" data-c="${esc(c.codice)}">✗ Non presente: annulla la vincita</button></div></div>`;
   }).join('') + (a.vincitori.length > 4 ? `<div class="sotto">… e altri ${a.vincitori.length - 4}</div>` : '');
   $('#vinciBox').innerHTML = `<div class="titolo">${esc(nomeP.toUpperCase())}!</div><div class="sotto">${a.vincitori.length > 1 ? 'Vincono a pari merito' : 'Ha vinto'}</div><div class="lista">${lista}</div>${p.premio ? `<div class="prem">🎁 ${esc(p.premio)}</div>` : ''}<div class="continua">Clicca per continuare</div>`;
   $('#vinci').classList.add('on');
+  if (!annuncia) return;
   suonoVittoria(); coriandoli();
   const nomi = a.vincitori.slice(0, 4).map(x => { const c = cartelle[x.i]; return `${c.nome} ${c.cognome}, ${c.classe.replace('ª', '')} ${INDIRIZZI[c.indirizzo]?.nome || ''}`; }).join('; ');
   setTimeout(() => parla(`${nomeP}! ${a.vincitori.length > 1 ? 'Vincono' : 'Ha vinto'} ${nomi}`), 900);
 }
-function chiudiVincita() { $('#vinci').classList.remove('on'); stopCoriandoli(); if (codaVincite.length) setTimeout(prossimaVincita, 400); }
+function chiudiVincita() { vincitaAperta = null; $('#vinci').classList.remove('on'); stopCoriandoli(); if (codaVincite.length) setTimeout(prossimaVincita, 400); }
+
+/* ---------- vincite annullate (vincitore assente) ---------- */
+function annullaVincita(pi, codice) {
+  const p = premi[pi], nomeP = (p.nome || TIPI[p.tipo]);
+  stato.annullati.push({ p: pi, c: codice }); salvaStato();
+  const prima = assegnati[pi];
+  disegnaPremi();
+  const ora = assegnati[pi];
+  return { nomeP, ora, cambiato: !prima || !ora || prima.estrazione !== ora.estrazione || prima.vincitori.length !== ora.vincitori.length };
+}
+$('#vinciBox').addEventListener('click', e => {
+  const b = e.target.closest('button.assente'); if (!b) return;
+  e.stopPropagation();
+  const v = vincitaAperta; if (!v) return;
+  const c = cartelle.find(x => x.codice === b.dataset.c);
+  if (!confirm(`${c ? c.nome + ' ' + c.cognome : 'Il vincitore'} non è presente o non reclama il premio.\n\nAnnullare la sua vincita? Il premio torna in palio.`)) return;
+  const r = annullaVincita(v.pi, b.dataset.c);
+  if (!r.ora) { chiudiVincita(); toast(`Vincita annullata: ${r.nomeP.toUpperCase()} di nuovo in palio`); parla(`Vincita annullata. ${r.nomeP} di nuovo in palio`); return; }
+  // restano altri vincitori a pari merito, oppure il premio passa subito a chi l'aveva già fatto
+  const nuovi = r.ora.vincitori.some(x => !v.a.vincitori.some(y => y.i === x.i));
+  mostraVincita({ p: premi[v.pi], a: r.ora, pi: v.pi }, nuovi);
+});
 
 /* ---------- coriandoli ---------- */
 let corAnim = null;
@@ -434,10 +469,19 @@ $('#predef').onclick = () => { if (confirm('Ripristinare i premi standard? I tes
 function apriImp() {
   righePremi(); $('#oSmorfia').checked = opz.smorfia; $('#oVoceSmorfia').checked = opz.voceSmorfia; $('#oPin').value = pin;
   $('#infoArchivio').textContent = Archivio.modalitaProva ? 'Modalità prova: le cartelle arrivano da questo browser (pagina Genera aperta su questo PC).' : `Cartelle caricate dal foglio Google: ${cartelle.length}. Si aggiornano da sole ogni 45 secondi.`;
+  disegnaAnnullati();
   $('#msgImp').textContent = ''; $('#modale').classList.add('on');
 }
+function disegnaAnnullati() {
+  const l = stato.annullati || [];
+  $('#listaAnnullati').innerHTML = l.length ? l.map((x, k) => { const c = cartelle.find(y => y.codice === x.c); const p = premi[x.p]; return `<div class="riga" style="grid-template-columns:1fr auto"><span><b>${esc(p ? (p.nome || TIPI[p.tipo]) : 'Premio')}</b> – ${esc(c ? nomeCorto(c) + ' (' + classeInd(c) + ')' : 'cartella ' + x.c)}</span><button class="del" style="width:auto;padding:0 14px;background:#E8F6F7;color:#0b5c64;font-size:14px" data-rip="${k}">Ripristina</button></div>`; }).join('') : '<p class="n">Nessuna.</p>';
+}
+$('#listaAnnullati').addEventListener('click', e => {
+  const b = e.target.closest('[data-rip]'); if (!b) return;
+  stato.annullati.splice(+b.dataset.rip, 1); salvaStato(); disegnaAnnullati(); aggiornaVista();
+});
 $('#ricarica').onclick = async () => { pin = $('#oPin').value.trim(); LS.set('tombola_pin_tab', pin); $('#msgImp').textContent = 'Carico…'; const ok = await caricaCartelle(true); $('#msgImp').textContent = ok ? `Fatto: ${cartelle.length} cartelle.` : 'Non riesco a caricare: controlla il codice operatore e la connessione.'; };
-$('#nuova').onclick = () => { if (confirm('Iniziare una NUOVA PARTITA? Tutti i numeri estratti verranno azzerati.')) { stato = { estratti: [] }; salvaStato(); aggiornaVista(); $('#modale').classList.remove('on'); toast('Nuova partita!'); } };
+$('#nuova').onclick = () => { if (confirm('Iniziare una NUOVA PARTITA? Tutti i numeri estratti verranno azzerati.')) { stato = { estratti: [], annullati: [] }; salvaStato(); aggiornaVista(); $('#modale').classList.remove('on'); toast('Nuova partita!'); } };
 $('#chiudi').onclick = () => { leggiRighe(); salvaPremi(); opz.smorfia = $('#oSmorfia').checked; opz.voceSmorfia = $('#oVoceSmorfia').checked; salvaOpz(); $('#modale').classList.remove('on'); aggiornaVista(); };
 
 /* ---------- tasti ---------- */
