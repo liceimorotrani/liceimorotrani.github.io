@@ -13,7 +13,8 @@
 *{box-sizing:border-box;margin:0;padding:0}
 body{font-family:Inter,system-ui,sans-serif;background:var(--bg);color:#0d1b33;min-height:100vh}
 header{background:var(--navy);color:#fff;padding:18px 20px 22px;text-align:center}
-header{position:relative}.home{position:absolute;left:12px;top:12px;display:flex;align-items:center;gap:4px;color:#fff;text-decoration:none;font:700 14px Inter,sans-serif;background:rgba(255,255,255,.14);border:1px solid rgba(255,255,255,.25);border-radius:10px;padding:7px 11px}.home:active{background:rgba(255,255,255,.25)}
+header{position:relative;padding-top:64px}.home{position:absolute;left:14px;top:14px;display:inline-flex;align-items:center;gap:6px;color:#002A64;text-decoration:none;font:800 16px Poppins,sans-serif;background:#FDB300;border-radius:12px;padding:9px 16px;box-shadow:0 3px 10px rgba(0,0,0,.25)}.home:active{transform:scale(.97)}
+.homeBasso{display:block;text-align:center;margin:18px auto 0;max-width:520px;color:#002A64;font:700 16px Poppins,sans-serif;text-decoration:none;background:#fff;border:2px solid #002A64;border-radius:14px;padding:13px}
 header img{height:58px}
 header h1{font-family:Poppins,sans-serif;font-size:22px;margin-top:10px;letter-spacing:.3px}
 header h1 span{color:var(--gold)}
@@ -56,7 +57,7 @@ footer{text-align:center;color:#7a8aa8;font-size:12px;padding:10px 0 30px}
 </head>
 <body>
 <header>
-  <a class="home" href="./">← Home</a>
+  <a class="home" href="./">🏠 Home</a>
   <img src="../logo-iiss-aldo-moro-bianco.png" alt="IISS Aldo Moro Trani">
   <h1>Tombola <span>Moro</span> · Genera cartelle</h1>
 </header>
@@ -122,6 +123,7 @@ footer{text-align:center;color:#7a8aa8;font-size:12px;padding:10px 0 30px}
       <a class="btn sec" id="apri" target="_blank" rel="noopener" style="text-decoration:none">Apri le cartelle su questo telefono</a>
     </div>
   </section>
+  <a class="homeBasso" href="./">🏠 Torna alla home della tombola</a>
   <footer>IISS "Aldo Moro – S. Cosmai" · Trani</footer>
 </main>
 
