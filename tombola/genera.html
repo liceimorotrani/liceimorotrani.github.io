@@ -61,6 +61,7 @@ footer{text-align:center;color:#7a8aa8;font-size:12px;padding:10px 0 30px}
 .alunnoRiga .chiR b{display:block;font-size:16px;color:#002A64}
 .alunnoRiga .chiR small{display:block;color:#58698a;font-size:13px;margin-top:2px}
 .alunnoRiga button{border:0;border-radius:10px;padding:10px 12px;font:700 14px Inter,sans-serif;background:#FFE5EA;color:#c0002a;cursor:pointer;white-space:nowrap}
+.chips.tipo{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:4px}.chips.tipo .chip{font-size:16px;padding:14px 6px}.chips.tipo .chip.on{background:var(--gold);border-color:var(--gold);color:var(--navy)}
 .hidden{display:none!important}
 </style>
 </head>
@@ -82,6 +83,10 @@ footer{text-align:center;color:#7a8aa8;font-size:12px;padding:10px 0 30px}
     </div>
 
     <div class="card">
+      <div class="chips tipo" id="tipo">
+        <button class="chip on" data-v="alunno">🎒 Alunno</button><button class="chip" data-v="docente">🧑‍🏫 Docente</button>
+      </div>
+      <div id="boxClasse">
       <label class="t">Classe</label>
       <div class="chips" id="classe">
         <button class="chip" data-v="1ª">1ª</button><button class="chip" data-v="2ª">2ª</button><button class="chip" data-v="3ª">3ª</button><button class="chip" data-v="4ª">4ª</button><button class="chip" data-v="5ª">5ª</button>
@@ -90,7 +95,8 @@ footer{text-align:center;color:#7a8aa8;font-size:12px;padding:10px 0 30px}
       <div class="chips" id="sezione">
         <button class="chip" data-v="A">A</button><button class="chip" data-v="B">B</button><button class="chip" data-v="C">C</button><button class="chip" data-v="D">D</button><button class="chip" data-v="E">E</button><button class="chip" data-v="F">F</button><button class="chip" data-v="G">G</button><button class="chip" data-v="H">H</button>
       </div>
-      <label class="t">Indirizzo</label>
+      </div>
+      <label class="t" id="labInd">Indirizzo</label>
       <div class="chips ind" id="indirizzo">
         <button class="chip" data-v="ITES" style="--c:#109FAC">ITES</button>
         <button class="chip" data-v="EOA" style="--c:#FDB300">EOA</button>
@@ -159,16 +165,17 @@ footer{text-align:center;color:#7a8aa8;font-size:12px;padding:10px 0 30px}
 <script src="common.js"></script>
 <script>
 const $ = s => document.querySelector(s);
-const scelta = { classe: '', sezione: '', indirizzo: '', quante: '2' };
+const scelta = { tipo: 'alunno', classe: '', sezione: '', indirizzo: '', quante: '2' };
 if (Archivio.modalitaProva) $('#prova').classList.remove('hidden');
 try { $('#pin').value = localStorage.getItem('tombola_pin') || ''; } catch (e) {}
 if (Archivio.modalitaProva) $('#boxPin').classList.add('hidden');
 
-for (const id of ['classe', 'sezione', 'indirizzo', 'quante']) {
+for (const id of ['tipo', 'classe', 'sezione', 'indirizzo', 'quante']) {
   $('#' + id).addEventListener('click', e => {
     const b = e.target.closest('.chip'); if (!b) return;
     $('#' + id).querySelectorAll('.chip').forEach(x => x.classList.toggle('on', x === b));
     scelta[id] = b.dataset.v;
+    if (id === 'tipo') cambiaTipo();
     if (id !== 'quante') aggiornaElenco(id);
   });
 }
@@ -190,8 +197,15 @@ function scegliChip(id, v) {
   $('#' + id).querySelectorAll('.chip').forEach(x => x.classList.toggle('on', x.dataset.v === v));
   scelta[id] = v;
 }
+function cambiaTipo() {
+  const doc = scelta.tipo === 'docente';
+  $('#boxClasse').classList.toggle('hidden', doc);
+  $('#labInd').textContent = doc ? 'Indirizzo in cui insegna' : 'Indirizzo';
+  $('#err').textContent = '';
+}
 function aggiornaElenco(daDove) {
   const sel = $('#alunno');
+  if (scelta.tipo === 'docente') { $('#boxElenco').classList.add('hidden'); $('#boxManuale').classList.remove('hidden'); $('#statoElenco').textContent = ''; return; }
   if (!elenco || !scelta.classe || !scelta.sezione) { $('#boxElenco').classList.add('hidden'); $('#boxManuale').classList.remove('hidden'); return; }
   const diClasse = elenco.filter(r => r[0] === scelta.classe && r[1] === scelta.sezione);
   const indirizzi = [...new Set(diClasse.map(r => r[2]))];
@@ -219,11 +233,11 @@ async function genera(forza) {
   const usaElenco = !$('#boxElenco').classList.contains('hidden') && $('#alunno').value !== 'man';
   if (usaElenco && $('#alunno').value === '') return err.textContent = 'Scegli l\'alunno dall\'elenco.';
   const scelto = usaElenco ? righeVisibili[+$('#alunno').value] : null;
-  const dati = { pin: $('#pin').value.trim(), nome: scelto ? scelto[4] : maiuscolo($('#nome').value), cognome: scelto ? scelto[3] : maiuscolo($('#cognome').value), classe: scelta.classe && scelta.sezione ? scelta.classe + ' ' + scelta.sezione : '', indirizzo: scelta.indirizzo, quante: +scelta.quante, forza };
+  const dati = { pin: $('#pin').value.trim(), nome: scelto ? scelto[4] : maiuscolo($('#nome').value), cognome: scelto ? scelto[3] : maiuscolo($('#cognome').value), classe: scelta.tipo === 'docente' ? 'Docente' : (scelta.classe && scelta.sezione ? scelta.classe + ' ' + scelta.sezione : ''), indirizzo: scelta.indirizzo, quante: +scelta.quante, forza };
   if (forza && ultimo) Object.assign(dati, ultimo);
   if (!Archivio.modalitaProva && !dati.pin) return err.textContent = 'Inserisci il codice operatore.';
-  if (!scelta.classe) return err.textContent = 'Scegli la classe.';
-  if (!scelta.sezione) return err.textContent = 'Scegli la sezione.';
+  if (scelta.tipo !== 'docente' && !scelta.classe) return err.textContent = 'Scegli la classe.';
+  if (scelta.tipo !== 'docente' && !scelta.sezione) return err.textContent = 'Scegli la sezione.';
   if (!dati.indirizzo) return err.textContent = 'Scegli l\'indirizzo.';
   if (!dati.nome || !dati.cognome) return err.textContent = 'Scrivi nome e cognome.';
   const b = $('#genera'); b.disabled = true; b.textContent = 'Un attimo…'; $('#forza').disabled = true;
