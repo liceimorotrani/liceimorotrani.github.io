@@ -1,0 +1,192 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>Tombola Moro · Genera cartelle</title>
+<meta name="robots" content="noindex">
+<link rel="icon" href="../favicon-32.png">
+<link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@600;700;800&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+:root{--navy:#002A64;--navy2:#0A3A80;--gold:#FDB300;--teal:#109FAC;--green:#97D500;--mag:#ED40F1;--red:#FE114A;--bg:#F3F6FB}
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:Inter,system-ui,sans-serif;background:var(--bg);color:#0d1b33;min-height:100vh}
+header{background:var(--navy);color:#fff;padding:18px 20px 22px;text-align:center}
+header img{height:58px}
+header h1{font-family:Poppins,sans-serif;font-size:22px;margin-top:10px;letter-spacing:.3px}
+header h1 span{color:var(--gold)}
+.strip{height:6px;background:linear-gradient(90deg,var(--teal) 0 20%,var(--green) 20% 40%,var(--gold) 40% 60%,var(--mag) 60% 80%,var(--red) 80%)}
+main{max-width:520px;margin:0 auto;padding:18px 16px 40px}
+.card{background:#fff;border-radius:18px;padding:18px;box-shadow:0 4px 18px rgba(0,42,100,.08);margin-bottom:16px}
+.avviso{background:#FFF4D6;border:1px solid #F5D27A;color:#6b4b00;border-radius:12px;padding:10px 12px;font-size:14px;margin-bottom:14px}
+label.t{display:block;font-weight:700;font-size:14px;color:var(--navy);margin:14px 0 8px}
+label.t:first-child{margin-top:0}
+input[type=text],input[type=password]{width:100%;font:inherit;font-size:18px;padding:12px 14px;border:2px solid #D6DEEA;border-radius:12px;outline:none;background:#fff}
+input:focus{border-color:var(--teal)}
+.chips{display:flex;gap:8px;flex-wrap:wrap}
+.chip{flex:1;min-width:56px;border:2px solid #D6DEEA;background:#fff;border-radius:12px;padding:12px 6px;font:700 17px Inter,sans-serif;color:var(--navy);cursor:pointer;text-align:center}
+.chip.on{background:var(--navy);border-color:var(--navy);color:#fff}
+.chips.ind .chip{font-size:14px;padding:12px 2px;min-width:0}
+.chips.ind .chip.on{border-color:var(--c);background:var(--c);color:#fff}
+.chips.ind .chip[data-v=EOA].on{color:var(--navy)}
+.btn{display:block;width:100%;border:0;border-radius:14px;padding:16px;font:800 18px Poppins,sans-serif;cursor:pointer;margin-top:18px;background:var(--gold);color:var(--navy)}
+.btn:disabled{opacity:.55}
+.btn.sec{background:#fff;border:2px solid var(--navy);color:var(--navy);font-size:16px;padding:13px;margin-top:10px}
+.btn.blu{background:var(--navy);color:#fff}
+.err{color:#c0002a;font-weight:600;font-size:14px;margin-top:10px;min-height:1em}
+.pinrow{display:flex;gap:8px;align-items:center}
+.pinrow small{color:#58698a}
+#vistaQR{text-align:center}
+#qr{background:#fff;border-radius:18px;padding:14px;margin:6px auto 12px;max-width:380px}
+#qr svg{width:100%;height:auto;display:block}
+.chi{font:800 24px Poppins,sans-serif;color:var(--navy)}
+.chi small{display:block;font:600 16px Inter,sans-serif;color:#40527a;margin-top:2px}
+.codici{display:flex;gap:6px;justify-content:center;flex-wrap:wrap;margin:12px 0 4px}
+.codici span{background:#EAF0F8;border-radius:8px;padding:5px 9px;font:700 14px ui-monospace,monospace;color:var(--navy)}
+.istr{font-size:15px;color:#40527a;margin-top:8px}
+.nota{background:#E8F6F7;border-radius:12px;padding:10px 12px;font-size:14px;color:#0b5c64;margin:10px 0}
+details{margin-top:6px}
+summary{cursor:pointer;color:#58698a;font-size:14px;font-weight:600}
+footer{text-align:center;color:#7a8aa8;font-size:12px;padding:10px 0 30px}
+.hidden{display:none!important}
+</style>
+</head>
+<body>
+<header>
+  <img src="../logo-iiss-aldo-moro-bianco.png" alt="IISS Aldo Moro Trani">
+  <h1>Tombola <span>Moro</span> · Genera cartelle</h1>
+</header>
+<div class="strip"></div>
+<main>
+  <div id="prova" class="avviso hidden">⚠️ <b>Modalità prova</b>: le cartelle si salvano solo in questo browser. Per l'evento va collegato lo script Google.</div>
+
+  <!-- MODULO -->
+  <section id="vistaForm">
+    <div class="card" id="boxPin">
+      <label class="t" for="pin">Codice operatore</label>
+      <div class="pinrow"><input id="pin" type="password" autocomplete="off" placeholder="Te lo dà il prof"></div>
+    </div>
+
+    <div class="card">
+      <label class="t">Classe</label>
+      <div class="chips" id="classe">
+        <button class="chip" data-v="1ª">1ª</button><button class="chip" data-v="2ª">2ª</button><button class="chip" data-v="3ª">3ª</button><button class="chip" data-v="4ª">4ª</button><button class="chip" data-v="5ª">5ª</button>
+      </div>
+      <label class="t">Indirizzo</label>
+      <div class="chips ind" id="indirizzo">
+        <button class="chip" data-v="ITES" style="--c:#109FAC">ITES</button>
+        <button class="chip" data-v="EOA" style="--c:#FDB300">EOA</button>
+        <button class="chip" data-v="MODA" style="--c:#ED40F1">Moda</button>
+        <button class="chip" data-v="AUDIO" style="--c:#FE114A">Audiovisivo</button>
+      </div>
+      <label class="t" for="nome">Nome</label>
+      <input id="nome" type="text" autocomplete="off" autocapitalize="words" maxlength="40">
+      <label class="t" for="cognome">Cognome</label>
+      <input id="cognome" type="text" autocomplete="off" autocapitalize="words" maxlength="40">
+      <label class="t">Quante cartelle?</label>
+      <div class="chips" id="quante">
+        <button class="chip" data-v="1">1</button><button class="chip on" data-v="2">2</button><button class="chip" data-v="3">3</button><button class="chip" data-v="4">4</button>
+      </div>
+      <button class="btn" id="genera">Genera le cartelle</button>
+      <div class="err" id="err"></div>
+    </div>
+
+    <details>
+      <summary>Altre funzioni (per il prof)</summary>
+      <div class="card" style="margin-top:10px">
+        <p class="istr" style="margin-top:0">Prima di una <b>nuova tombola</b> (un altro giorno) archivia le cartelle vecchie: il tabellone non le considererà più. Restano comunque salvate nel foglio Google.</p>
+        <button class="btn sec" id="archivia">Archivia tutte le cartelle</button>
+        <div class="err" id="errArch"></div>
+      </div>
+    </details>
+  </section>
+
+  <!-- QR -->
+  <section id="vistaQR" class="hidden">
+    <div class="card">
+      <div id="giaPresente" class="nota hidden"></div>
+      <div class="chi" id="chi"></div>
+      <div id="qr"></div>
+      <p class="istr"><b>Inquadra il QR</b> con la fotocamera del telefono: si aprono le tue cartelle. Dalla pagina puoi anche scaricarle in PDF.</p>
+      <div class="codici" id="codici"></div>
+      <button class="btn blu" id="nuovo">➕ Nuovo alunno</button>
+      <button class="btn sec" id="forza">Genera comunque nuove cartelle</button>
+      <a class="btn sec" id="apri" target="_blank" rel="noopener" style="text-decoration:none">Apri le cartelle su questo telefono</a>
+    </div>
+  </section>
+  <footer>IISS "Aldo Moro – S. Cosmai" · Trani</footer>
+</main>
+
+<script src="lib/qrcode.js"></script>
+<script src="common.js"></script>
+<script>
+const $ = s => document.querySelector(s);
+const scelta = { classe: '', indirizzo: '', quante: '2' };
+if (Archivio.modalitaProva) $('#prova').classList.remove('hidden');
+try { $('#pin').value = localStorage.getItem('tombola_pin') || ''; } catch (e) {}
+if (Archivio.modalitaProva) $('#boxPin').classList.add('hidden');
+
+for (const id of ['classe', 'indirizzo', 'quante']) {
+  $('#' + id).addEventListener('click', e => {
+    const b = e.target.closest('.chip'); if (!b) return;
+    $('#' + id).querySelectorAll('.chip').forEach(x => x.classList.toggle('on', x === b));
+    scelta[id] = b.dataset.v;
+  });
+}
+const maiuscolo = s => s.trim().replace(/\s+/g, ' ').toLowerCase().replace(/(^|[\s'’-])(\p{L})/gu, (m, a, b) => a + b.toUpperCase());
+let ultimo = null;
+
+async function genera(forza) {
+  const err = $('#err'); err.textContent = '';
+  const dati = { pin: $('#pin').value.trim(), nome: maiuscolo($('#nome').value), cognome: maiuscolo($('#cognome').value), classe: scelta.classe, indirizzo: scelta.indirizzo, quante: +scelta.quante, forza };
+  if (forza && ultimo) Object.assign(dati, ultimo);
+  if (!Archivio.modalitaProva && !dati.pin) return err.textContent = 'Inserisci il codice operatore.';
+  if (!dati.classe) return err.textContent = 'Scegli la classe.';
+  if (!dati.indirizzo) return err.textContent = 'Scegli l\'indirizzo.';
+  if (!dati.nome || !dati.cognome) return err.textContent = 'Scrivi nome e cognome.';
+  const b = $('#genera'); b.disabled = true; b.textContent = 'Un attimo…'; $('#forza').disabled = true;
+  try {
+    const r = await Archivio.registra(dati);
+    if (!r.ok) { err.textContent = r.errore || 'Errore. Riprova.'; if (forza) mostraForm(); return; }
+    try { localStorage.setItem('tombola_pin', dati.pin); } catch (e) {}
+    ultimo = { nome: dati.nome, cognome: dati.cognome, classe: dati.classe, indirizzo: dati.indirizzo, quante: dati.quante };
+    mostraQR(dati, r.codici, r.esistente);
+  } catch (e) {
+    err.textContent = 'Connessione assente o script non raggiungibile. Riprova.'; if (forza) mostraForm();
+  } finally { b.disabled = false; b.textContent = 'Genera le cartelle'; $('#forza').disabled = false; }
+}
+
+function mostraQR(d, codici, esistente) {
+  const url = linkAlunno(codici, d.nome, d.cognome, d.classe, d.indirizzo);
+  const q = qrcode(0, 'M'); q.addData(url); q.make();
+  $('#qr').innerHTML = q.createSvgTag({ cellSize: 8, margin: 2, scalable: true });
+  $('#chi').innerHTML = esc(d.nome + ' ' + d.cognome) + `<small>${esc(d.classe)} ${esc(INDIRIZZI[d.indirizzo].nome)} · ${codici.length} ${codici.length === 1 ? 'cartella' : 'cartelle'}</small>`;
+  $('#codici').innerHTML = codici.map(c => `<span>n. ${c}</span>`).join('');
+  $('#apri').href = url;
+  const g = $('#giaPresente');
+  g.classList.toggle('hidden', !esistente);
+  $('#forza').classList.toggle('hidden', !esistente);
+  if (esistente) g.innerHTML = '<b>Questo alunno ha già le sue cartelle.</b> Ecco di nuovo il suo QR. Se ne vuole altre, tocca “Genera comunque nuove cartelle”.';
+  $('#vistaForm').classList.add('hidden'); $('#vistaQR').classList.remove('hidden');
+  window.scrollTo(0, 0);
+}
+function mostraForm() {
+  $('#vistaQR').classList.add('hidden'); $('#vistaForm').classList.remove('hidden');
+}
+
+$('#genera').onclick = () => genera(false);
+$('#forza').onclick = () => genera(true);
+$('#nuovo').onclick = () => {
+  $('#nome').value = ''; $('#cognome').value = ''; ultimo = null;
+  mostraForm(); window.scrollTo(0, 0); setTimeout(() => $('#nome').focus(), 50);
+};
+$('#archivia').onclick = async () => {
+  const e = $('#errArch'); e.textContent = '';
+  if (!confirm('Archiviare TUTTE le cartelle generate finora?\nIl tabellone non le considererà più (restano nel foglio Google, in un foglio “Archivio”).')) return;
+  try { const r = await Archivio.archivia($('#pin').value.trim()); e.textContent = r.ok ? `Fatto: ${r.archiviate} cartelle archiviate.` : (r.errore || 'Errore'); }
+  catch (x) { e.textContent = 'Connessione assente. Riprova.'; }
+};
+</script>
+</body>
+</html>

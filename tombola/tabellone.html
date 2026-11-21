@@ -1,0 +1,492 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Tombola Moro · Tabellone</title>
+<meta name="robots" content="noindex">
+<link rel="icon" href="../favicon-32.png">
+<link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@600;700;800;900&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+:root{--navy:#002A64;--navy2:#06397E;--navy3:#0B4796;--gold:#FDB300;--teal:#109FAC;--green:#97D500;--mag:#ED40F1;--red:#FE114A}
+*{box-sizing:border-box;margin:0;padding:0}
+html,body{height:100%;overflow:hidden}
+body{font-family:Inter,system-ui,sans-serif;background:radial-gradient(120% 90% at 50% 0%,#0B4796 0%,#002A64 55%,#001A40 100%);color:#fff;user-select:none;cursor:pointer}
+.strip{position:fixed;left:0;right:0;bottom:0;height:.9vh;background:linear-gradient(90deg,var(--teal) 0 20%,var(--green) 20% 40%,var(--gold) 40% 60%,var(--mag) 60% 80%,var(--red) 80%)}
+/* barra in alto */
+.top{height:11vh;display:flex;align-items:center;padding:0 2.2vw;gap:2vw}
+.top img{height:7.4vh}
+.top h1{font:900 5vh Poppins,sans-serif;letter-spacing:.05em;flex:1;text-align:center}
+.top h1 span{color:var(--gold)}
+.tasti{display:flex;gap:.6vw;align-items:center}
+.tasto{background:rgba(255,255,255,.1);border:1px solid rgba(255,255,255,.18);color:#fff;border-radius:1.2vh;height:5vh;min-width:5vh;padding:0 1vh;font:600 1.7vh Inter,sans-serif;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:.6vh;white-space:nowrap}
+.tasto:hover{background:rgba(255,255,255,.2)}
+.tasto.off{opacity:.45}
+.tasto .ic{font-size:2.4vh}
+/* corpo */
+.corpo{height:calc(89vh - .9vh);display:grid;grid-template-columns:27vw 1fr 23vw;gap:1.6vw;padding:0 2vw 2.2vh}
+.pannello{background:rgba(255,255,255,.07);border:1px solid rgba(255,255,255,.12);border-radius:2.2vh;padding:2vh 1.4vw;display:flex;flex-direction:column;min-height:0}
+.etichetta{font:700 1.8vh Inter,sans-serif;letter-spacing:.18em;text-transform:uppercase;color:rgba(255,255,255,.7)}
+/* sinistra */
+.sx{align-items:center;text-align:center}
+.palla{width:24vh;height:24vh;border-radius:50%;margin:1.6vh auto 1.4vh;background:radial-gradient(circle at 35% 30%,#fff 0%,#FFE9A8 22%,#FDB300 60%,#C98A00 100%);box-shadow:0 1.6vh 4vh rgba(0,0,0,.45),inset 0 -1.2vh 2.4vh rgba(0,0,0,.2);display:flex;align-items:center;justify-content:center;font:900 13vh Poppins,sans-serif;color:var(--navy)}
+.palla.vuota{background:radial-gradient(circle at 35% 30%,rgba(255,255,255,.25),rgba(255,255,255,.06));color:rgba(255,255,255,.35);font-size:6vh;box-shadow:none}
+.emoji{font-size:10vh;line-height:1.1;min-height:11vh;display:flex;align-items:center;justify-content:center}
+.emoji img{height:16vh;border-radius:1.4vh;box-shadow:0 1vh 2.4vh rgba(0,0,0,.35)}
+.dial{font:800 3.1vh Poppins,sans-serif;color:var(--gold);margin-top:.6vh;line-height:1.15}
+.ita{font:500 2.4vh Inter,sans-serif;font-style:italic;color:rgba(255,255,255,.85);margin-top:.4vh}
+.flag{display:inline-flex;width:13vh;height:8.6vh;border-radius:1vh;overflow:hidden;box-shadow:0 .8vh 2vh rgba(0,0,0,.35)}
+.flag i{flex:1}.flag i:nth-child(1){background:#009246}.flag i:nth-child(2){background:#fff}.flag i:nth-child(3){background:#CE2B37}
+.conta{margin-top:auto;width:100%}
+.conta .num{font:800 3vh Poppins,sans-serif}
+.ultimi{display:flex;gap:.8vh;justify-content:center;margin-top:1vh;min-height:6vh}
+.ultimi span{width:6vh;height:6vh;border-radius:50%;background:rgba(255,255,255,.14);display:flex;align-items:center;justify-content:center;font:800 2.6vh Poppins,sans-serif}
+/* tabellone */
+.tab{display:grid;grid-template-columns:repeat(10,1fr);grid-template-rows:repeat(9,1fr);gap:.75vh;height:100%;padding:1.6vh;background:rgba(0,0,0,.18);border-radius:2.2vh;border:1px solid rgba(255,255,255,.12)}
+.tab .n{border-radius:1.1vh;display:flex;align-items:center;justify-content:center;font:800 4.4vh Poppins,sans-serif;color:rgba(255,255,255,.55);background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.08);transition:background .35s,color .35s,transform .35s}
+.tab .n:nth-child(10n+5){margin-right:.9vh}
+.tab .n:nth-child(n+31):nth-child(-n+40),.tab .n:nth-child(n+61):nth-child(-n+70){margin-bottom:.9vh}
+.tab .n.x{background:var(--gold);color:var(--navy);border-color:#FFD45C;box-shadow:0 .4vh 1.2vh rgba(253,179,0,.35)}
+.tab .n.ultimo{animation:pulsa 1.4s ease-in-out infinite;background:#fff;color:var(--navy)}
+@keyframes pulsa{0%,100%{box-shadow:0 0 0 0 rgba(255,255,255,.8)}50%{box-shadow:0 0 0 1.2vh rgba(255,255,255,0)}}
+.tab .n.pop{animation:pop .7s cubic-bezier(.2,1.6,.4,1)}
+@keyframes pop{0%{transform:scale(.2)}100%{transform:scale(1)}}
+/* premi */
+.premi{gap:1vh;overflow:hidden}
+.premi .etichetta{margin-bottom:.4vh}
+.premio{border-radius:1.6vh;padding:1.1vh 1.1vw;background:rgba(255,255,255,.08);border:1px solid rgba(255,255,255,.12)}
+.premio .p1{display:flex;justify-content:space-between;align-items:baseline;gap:.6vw}
+.premio .pn{font:800 2.6vh Poppins,sans-serif;text-transform:uppercase;letter-spacing:.04em}
+.premio .pt{font:600 1.5vh Inter,sans-serif;color:rgba(255,255,255,.6);white-space:nowrap}
+.premio .pp{font:500 1.8vh Inter,sans-serif;color:rgba(255,255,255,.85);margin-top:.2vh}
+.premio .pw{font:700 1.7vh Inter,sans-serif;margin-top:.5vh;color:var(--green)}
+.premio.corrente{background:rgba(253,179,0,.16);border-color:var(--gold);box-shadow:0 0 0 .3vh rgba(253,179,0,.25)}
+.premio.corrente .pt{color:var(--gold)}
+.premio.vinto{opacity:.75}
+.premio.vinto .pn{text-decoration:line-through;text-decoration-thickness:.3vh;text-decoration-color:var(--green)}
+.cartelleInfo{margin-top:auto;font:600 1.6vh Inter,sans-serif;color:rgba(255,255,255,.65);text-align:center}
+.aiuto{position:fixed;bottom:1.6vh;left:50%;transform:translateX(-50%);font:600 1.6vh Inter,sans-serif;color:rgba(255,255,255,.55)}
+/* estrazione */
+.velo{position:fixed;inset:0;background:rgba(0,16,42,.78);backdrop-filter:blur(.6vh);display:flex;align-items:center;justify-content:center;flex-direction:column;opacity:0;pointer-events:none;transition:opacity .25s;z-index:10}
+.velo.on{opacity:1;pointer-events:auto}
+.grande{width:44vh;height:44vh;border-radius:50%;background:radial-gradient(circle at 35% 30%,#fff 0%,#FFE9A8 22%,#FDB300 60%,#C98A00 100%);box-shadow:0 3vh 8vh rgba(0,0,0,.6),inset 0 -2vh 4vh rgba(0,0,0,.2);display:flex;align-items:center;justify-content:center;font:900 26vh Poppins,sans-serif;color:var(--navy)}
+.grande.gira{animation:gira .12s linear infinite}
+@keyframes gira{0%{transform:rotate(-6deg) scale(.97)}50%{transform:rotate(6deg) scale(1.02)}100%{transform:rotate(-6deg) scale(.97)}}
+.grande.esce{animation:esce .6s cubic-bezier(.2,1.6,.4,1)}
+@keyframes esce{0%{transform:scale(.5)}100%{transform:scale(1)}}
+.smorfiaG{text-align:center;margin-top:3vh;min-height:20vh;opacity:0;transition:opacity .4s}
+.smorfiaG.on{opacity:1}
+.smorfiaG .emoji{font-size:13vh;min-height:14vh}
+.smorfiaG .emoji img{height:22vh}
+.smorfiaG .flag{width:18vh;height:12vh}
+.smorfiaG .dial{font-size:5vh}
+.smorfiaG .ita{font-size:3.4vh}
+/* vincita */
+.vinci{z-index:20;background:rgba(0,16,42,.86)}
+.vinci .box{background:linear-gradient(160deg,#0B4796,#002A64);border:.4vh solid var(--gold);border-radius:3vh;padding:3vh 3.4vw;max-height:94vh;text-align:center;max-width:80vw;box-shadow:0 3vh 9vh rgba(0,0,0,.6);animation:esce .7s cubic-bezier(.2,1.6,.4,1)}
+.vinci .titolo{font:900 9.5vh Poppins,sans-serif;color:var(--gold);letter-spacing:.04em;line-height:1}
+.vinci .sotto{font:600 2.6vh Inter,sans-serif;color:rgba(255,255,255,.8);margin-top:1vh}
+.vinci .chi{font:800 4.4vh Poppins,sans-serif;margin-top:1.6vh;line-height:1.15}
+.vinci .chi small{display:block;font:600 2.6vh Inter,sans-serif;color:rgba(255,255,255,.75);margin-top:.4vh}
+.vinci .lista{display:flex;flex-direction:column;gap:1vh;margin-top:1vh}
+.vinci .prem{display:inline-block;margin-top:2.2vh;background:var(--gold);color:var(--navy);border-radius:5vh;padding:1.2vh 3vh;font:800 3vh Poppins,sans-serif}
+.mini{display:inline-grid;grid-template-columns:repeat(9,4.2vh);gap:.4vh;margin-top:1vh;padding:.6vh;background:rgba(255,255,255,.12);border-radius:1vh}
+.mini b{height:4.2vh;border-radius:.6vh;background:rgba(255,255,255,.9);color:var(--navy);display:flex;align-items:center;justify-content:center;font:800 2.2vh Poppins,sans-serif}
+.mini b.v{background:rgba(255,255,255,.15)}
+.mini b.x{background:var(--gold)}
+.mini b.r{outline:.35vh solid var(--green);outline-offset:-.1vh}
+.continua{margin-top:1.8vh;font:600 1.8vh Inter,sans-serif;color:rgba(255,255,255,.55)}
+canvas#coriandoli{position:fixed;inset:0;width:100vw;height:100vh;pointer-events:none;z-index:25}
+/* impostazioni */
+.modale{position:fixed;inset:0;background:rgba(0,10,30,.7);display:none;align-items:center;justify-content:center;z-index:30;cursor:default}
+.modale.on{display:flex}
+.finestra{background:#fff;color:#0d1b33;border-radius:2vh;padding:3vh 2.4vw;width:min(980px,92vw);max-height:90vh;overflow:auto;font-size:16px;user-select:text}
+.finestra h2{font:800 26px Poppins,sans-serif;color:var(--navy);margin-bottom:6px}
+.finestra h3{font:700 18px Poppins,sans-serif;color:var(--navy);margin:20px 0 8px}
+.finestra p.n{color:#58698a;font-size:14px;margin-bottom:10px}
+.riga{display:grid;grid-template-columns:30px 1.1fr 1.2fr 2fr 40px;gap:8px;align-items:center;margin-bottom:8px}
+.riga input,.riga select,.finestra input.campo{font:inherit;padding:9px 10px;border:2px solid #D6DEEA;border-radius:10px;width:100%}
+.riga .ord{display:flex;flex-direction:column}
+.riga .ord button,.riga .del{border:0;background:#EEF2F8;border-radius:6px;cursor:pointer;font-size:12px;padding:2px}
+.riga .del{font-size:18px;height:40px;background:#FFE5EA;color:#c0002a}
+.bott{display:flex;gap:10px;flex-wrap:wrap;margin-top:14px}
+.bott button{border:0;border-radius:12px;padding:12px 18px;font:700 15px Poppins,sans-serif;cursor:pointer;background:#EEF2F8;color:var(--navy)}
+.bott button.prim{background:var(--gold)}
+.bott button.peric{background:#FFE5EA;color:#c0002a}
+.opz{display:flex;gap:18px;flex-wrap:wrap}
+.opz label{display:flex;gap:8px;align-items:center;font-weight:600}
+.msg{margin-top:8px;font-weight:600;color:#0b5c64;min-height:1.2em}
+.toast{position:fixed;top:12vh;left:50%;transform:translateX(-50%);background:#fff;color:var(--navy);padding:1.4vh 2.4vw;border-radius:1.4vh;font:700 2vh Inter,sans-serif;box-shadow:0 1vh 3vh rgba(0,0,0,.35);z-index:40;opacity:0;transition:opacity .3s;pointer-events:none}
+.toast.on{opacity:1}
+.avvio{position:fixed;inset:0;z-index:50;background:radial-gradient(120% 90% at 50% 0%,#0B4796 0%,#002A64 55%,#001A40 100%);display:flex;align-items:center;justify-content:center;flex-direction:column;text-align:center;gap:2.4vh}
+.avvio img{height:14vh}
+.avvio h2{font:900 8vh Poppins,sans-serif}.avvio h2 span{color:var(--gold)}
+.avvio p{font:500 2.4vh Inter,sans-serif;color:rgba(255,255,255,.8);max-width:60vw}
+.avvio input{font:600 2.6vh Inter,sans-serif;padding:1.4vh 1.6vw;border-radius:1.4vh;border:0;text-align:center;width:30vw}
+.avvio button{font:800 3vh Poppins,sans-serif;background:var(--gold);color:var(--navy);border:0;border-radius:2vh;padding:1.8vh 4vw;cursor:pointer}
+.avvio .err{color:#FF9DB0;font-weight:700;min-height:1em;font-size:2.2vh}
+</style>
+</head>
+<body>
+<div class="top">
+  <img src="../logo-iiss-aldo-moro-bianco.png" alt="IISS Aldo Moro Trani">
+  <h1>TOMBOLA <span>MORO</span></h1>
+  <div class="tasti">
+    <button class="tasto" id="tCartelle" title="Aggiorna l'elenco delle cartelle"><span class="ic">🎟️</span><span id="nCartelle">0</span></button>
+    <button class="tasto" id="tVoce" title="Voce"><span class="ic">🗣️</span></button>
+    <button class="tasto" id="tSuoni" title="Effetti sonori"><span class="ic">🔊</span></button>
+    <button class="tasto" id="tAnnulla" title="Annulla l'ultimo numero"><span class="ic">↩️</span></button>
+    <button class="tasto" id="tImpost" title="Premi e impostazioni"><span class="ic">⚙️</span></button>
+    <button class="tasto" id="tSchermo" title="Schermo intero"><span class="ic">⛶</span></button>
+  </div>
+</div>
+
+<div class="corpo">
+  <div class="pannello sx">
+    <div class="etichetta">Ultimo numero</div>
+    <div class="palla vuota" id="palla">?</div>
+    <div class="emoji" id="emoji"></div>
+    <div class="dial" id="dial"></div>
+    <div class="ita" id="ita"></div>
+    <div class="conta">
+      <div class="etichetta">Estratti <span class="num" id="conta">0</span> / 90</div>
+      <div class="ultimi" id="ultimi"></div>
+    </div>
+  </div>
+  <div class="tab" id="tab"></div>
+  <div class="pannello premi" id="premi"></div>
+</div>
+<div class="aiuto" id="aiuto">Clicca o premi SPAZIO per estrarre</div>
+<div class="strip"></div>
+
+<!-- estrazione -->
+<div class="velo" id="velo">
+  <div class="grande" id="grande">?</div>
+  <div class="smorfiaG" id="smorfiaG"><div class="emoji" id="gEmoji"></div><div class="dial" id="gDial"></div><div class="ita" id="gIta"></div></div>
+</div>
+<!-- vincita -->
+<div class="velo vinci" id="vinci"><div class="box" id="vinciBox"></div></div>
+<canvas id="coriandoli"></canvas>
+
+<!-- impostazioni -->
+<div class="modale" id="modale">
+  <div class="finestra">
+    <h2>Premi e impostazioni</h2>
+    <h3>Premi</h3>
+    <p class="n">Scrivi il nome, scegli quando si vince e cosa si vince. L'ordine è quello mostrato sul tabellone.</p>
+    <div class="riga" style="font-weight:700;color:#58698a;font-size:13px"><span></span><span>Nome</span><span>Si vince con</span><span>Premio</span><span></span></div>
+    <div id="righePremi"></div>
+    <div class="bott"><button id="aggiungi">➕ Aggiungi premio</button><button id="predef">Ripristina premi standard</button></div>
+    <h3>Opzioni</h3>
+    <div class="opz">
+      <label><input type="checkbox" id="oSmorfia"> Mostra la smorfia</label>
+      <label><input type="checkbox" id="oVoceSmorfia"> La voce legge anche la smorfia</label>
+    </div>
+    <h3>Cartelle</h3>
+    <p class="n" id="infoArchivio"></p>
+    <div class="opz"><label style="flex:1">Codice operatore <input class="campo" id="oPin" type="password" style="max-width:260px"></label></div>
+    <div class="bott"><button id="ricarica">🔄 Ricarica cartelle</button></div>
+    <div class="msg" id="msgImp"></div>
+    <h3>Partita</h3>
+    <div class="bott"><button class="peric" id="nuova">🔁 Nuova partita (azzera i numeri estratti)</button></div>
+    <div class="bott" style="justify-content:flex-end;margin-top:24px"><button class="prim" id="chiudi">Salva e chiudi</button></div>
+  </div>
+</div>
+<div class="toast" id="toast"></div>
+
+<div class="avvio" id="avvio">
+  <img src="../logo-iiss-aldo-moro-bianco.png" alt="">
+  <h2>TOMBOLA <span>MORO</span></h2>
+  <p id="avvioTesto">Inserisci il codice operatore per caricare le cartelle degli alunni.</p>
+  <input id="avvioPin" type="password" placeholder="Codice operatore">
+  <div class="err" id="avvioErr"></div>
+  <button id="avvioVai">Inizia</button>
+</div>
+
+<script src="common.js"></script>
+<script>
+const $ = s => document.querySelector(s);
+const TIPI = { '2': 'Ambo', '3': 'Terno', '4': 'Quaterna', '5': 'Cinquina', 'T': 'Tombola', 'T2': 'Seconda tombola' };
+const PREMI_STANDARD = [
+  { nome: 'Ambo', tipo: '2', premio: '' },
+  { nome: 'Terno', tipo: '3', premio: '' },
+  { nome: 'Quaterna', tipo: '4', premio: '' },
+  { nome: 'Cinquina', tipo: '5', premio: '' },
+  { nome: 'Tombola', tipo: 'T', premio: '' },
+  { nome: 'Tombolicchio', tipo: 'T2', premio: '' }
+];
+const LS = {
+  get(k, d) { try { const v = localStorage.getItem(k); return v === null ? d : JSON.parse(v); } catch (e) { return d; } },
+  set(k, v) { try { localStorage.setItem(k, JSON.stringify(v)); } catch (e) {} }
+};
+let stato = LS.get('tombola_partita', null) || { estratti: [] };
+let premi = LS.get('tombola_premi', null) || JSON.parse(JSON.stringify(PREMI_STANDARD));
+let opz = Object.assign({ voce: true, suoni: true, smorfia: true, voceSmorfia: true }, LS.get('tombola_opzioni', {}));
+let pin = LS.get('tombola_pin_tab', '');
+let cartelle = LS.get('tombola_cache_cartelle', []); // {codice,nome,cognome,classe,indirizzo,griglia}
+let assegnati = []; // per premio: {estrazione, vincitori:[{c, riga}]}
+let occupato = false, timerVelo = null, codaVincite = [];
+
+const salvaStato = () => LS.set('tombola_partita', stato);
+const salvaPremi = () => LS.set('tombola_premi', premi);
+const salvaOpz = () => LS.set('tombola_opzioni', opz);
+function toast(t) { const el = $('#toast'); el.textContent = t; el.classList.add('on'); clearTimeout(el._t); el._t = setTimeout(() => el.classList.remove('on'), 2600); }
+
+/* ---------- tabellone ---------- */
+const tab = $('#tab');
+for (let n = 1; n <= 90; n++) { const d = document.createElement('div'); d.className = 'n'; d.id = 'n' + n; d.textContent = n; tab.appendChild(d); }
+
+function smorfiaHtml(n) {
+  if (SMORFIA_IMMAGINI) return `<img src="smorfia/${n}.jpg" alt="" onerror="this.replaceWith(document.createTextNode('${SMORFIA[n][2]}'))">`;
+  if (n === 1) return '<span class="flag"><i></i><i></i><i></i></span>';
+  return SMORFIA[n][2];
+}
+function aggiornaVista(nuovo) {
+  const e = stato.estratti, s = new Set(e), last = e[e.length - 1];
+  for (let n = 1; n <= 90; n++) { const el = $('#n' + n); el.classList.toggle('x', s.has(n)); el.classList.toggle('ultimo', n === last); }
+  if (nuovo) { const el = $('#n' + nuovo); el.classList.remove('pop'); void el.offsetWidth; el.classList.add('pop'); }
+  $('#conta').textContent = e.length;
+  const p = $('#palla');
+  if (last) { p.textContent = last; p.classList.remove('vuota'); } else { p.textContent = '?'; p.classList.add('vuota'); }
+  const mostra = last && opz.smorfia;
+  $('#emoji').innerHTML = mostra ? smorfiaHtml(last) : '';
+  $('#dial').textContent = mostra ? SMORFIA[last][0] : '';
+  $('#ita').textContent = mostra && SMORFIA[last][1] !== SMORFIA[last][0] ? SMORFIA[last][1] : '';
+  $('#ultimi').innerHTML = e.slice(-6, -1).reverse().map(n => `<span>${n}</span>`).join('');
+  $('#aiuto').textContent = e.length >= 90 ? 'Tutti i 90 numeri sono stati estratti' : 'Clicca o premi SPAZIO per estrarre';
+  disegnaPremi();
+}
+
+/* ---------- premi e vincite ---------- */
+function nomeCorto(c) { return `${c.nome} ${c.cognome}`; }
+function classeInd(c) { return `${c.classe} ${INDIRIZZI[c.indirizzo]?.nome || c.indirizzo}`; }
+function calcolaVincite() {
+  const e = stato.estratti;
+  const conta = cartelle.map(() => [0, 0, 0]);
+  const pos = new Map(); // numero -> [[indiceCartella, riga]]
+  cartelle.forEach((c, i) => c.griglia.forEach((r, ri) => r.forEach(n => { if (n) { if (!pos.has(n)) pos.set(n, []); pos.get(n).push([i, ri]); } })));
+  const ris = premi.map(() => null);
+  const vincitoriTombola = new Set();
+  e.forEach((n, k) => {
+    for (const [i, ri] of (pos.get(n) || [])) conta[i][ri]++;
+    premi.forEach((p, pi) => {
+      if (ris[pi]) return;
+      const v = [];
+      if (['2', '3', '4', '5'].includes(p.tipo)) {
+        const soglia = +p.tipo;
+        conta.forEach((cc, i) => { const ri = cc.findIndex(x => x >= soglia); if (ri >= 0) v.push({ i, riga: ri }); });
+      } else if (p.tipo === 'T') {
+        conta.forEach((cc, i) => { if (cc[0] + cc[1] + cc[2] === 15) v.push({ i, riga: -1 }); });
+      } else if (p.tipo === 'T2') {
+        const pt = premi.findIndex(q => q.tipo === 'T');
+        if (pt < 0 || !ris[pt] || ris[pt].estrazione === k) return;
+        conta.forEach((cc, i) => { if (cc[0] + cc[1] + cc[2] === 15 && !vincitoriTombola.has(i)) v.push({ i, riga: -1 }); });
+      }
+      if (v.length) { ris[pi] = { estrazione: k, vincitori: v }; if (p.tipo === 'T') v.forEach(x => vincitoriTombola.add(x.i)); }
+    });
+  });
+  return ris;
+}
+function disegnaPremi() {
+  assegnati = calcolaVincite();
+  const corrente = assegnati.findIndex(a => !a);
+  $('#premi').innerHTML = '<div class="etichetta">Premi in palio</div>' + premi.map((p, i) => {
+    const a = assegnati[i];
+    const w = a ? '✓ ' + a.vincitori.slice(0, 3).map(v => `${esc(nomeCorto(cartelle[v.i]))} <span style="opacity:.75">(${esc(classeInd(cartelle[v.i]))})</span>`).join(', ') + (a.vincitori.length > 3 ? ` e altri ${a.vincitori.length - 3}` : '') : '';
+    return `<div class="premio${a ? ' vinto' : ''}${i === corrente ? ' corrente' : ''}"><div class="p1"><span class="pn">${esc(p.nome || TIPI[p.tipo])}</span><span class="pt">${a ? 'vinto' : i === corrente ? 'in palio ora' : ''}</span></div>${p.premio ? `<div class="pp">🎁 ${esc(p.premio)}</div>` : ''}${w ? `<div class="pw">${w}</div>` : ''}</div>`;
+  }).join('') + `<div class="cartelleInfo">${cartelle.length} cartelle in gioco${Archivio.modalitaProva ? ' · modalità prova' : ''}</div>`;
+  $('#nCartelle').textContent = cartelle.length;
+}
+
+/* ---------- suoni ---------- */
+let ac = null;
+function audio() { if (!ac) { try { ac = new (window.AudioContext || window.webkitAudioContext)(); } catch (e) {} } if (ac && ac.state === 'suspended') ac.resume(); return ac; }
+function nota(freq, t0, dur, tipo = 'sine', vol = .2) {
+  const a = audio(); if (!a || !opz.suoni) return;
+  const o = a.createOscillator(), g = a.createGain();
+  o.type = tipo; o.frequency.value = freq;
+  g.gain.setValueAtTime(0, a.currentTime + t0);
+  g.gain.linearRampToValueAtTime(vol, a.currentTime + t0 + .01);
+  g.gain.exponentialRampToValueAtTime(.0001, a.currentTime + t0 + dur);
+  o.connect(g).connect(a.destination); o.start(a.currentTime + t0); o.stop(a.currentTime + t0 + dur + .05);
+}
+function suonoTic(i) { nota(700 + (i % 5) * 90, 0, .05, 'square', .06); }
+function suonoUscita() { [523.25, 659.25, 783.99, 1046.5].forEach((f, i) => nota(f, i * .07, .9 - i * .1, 'triangle', .18)); nota(2093, .28, .8, 'sine', .07); }
+function suonoVittoria() {
+  const s = [[523.25, 0], [659.25, .14], [783.99, .28], [1046.5, .42], [783.99, .62], [1046.5, .76]];
+  s.forEach(([f, t]) => { nota(f, t, .45, 'square', .07); nota(f / 2, t, .45, 'triangle', .12); });
+  [1046.5, 1318.5, 1568].forEach(f => nota(f, .95, 1.4, 'triangle', .1));
+}
+let voceIt = null;
+function scegliVoce() { const v = speechSynthesis.getVoices(); voceIt = v.find(x => /it[-_]IT/i.test(x.lang) && /Google|Natural|Online/i.test(x.name)) || v.find(x => /^it/i.test(x.lang)) || null; }
+if ('speechSynthesis' in window) { scegliVoce(); speechSynthesis.onvoiceschanged = scegliVoce; }
+function parla(t) {
+  if (!opz.voce || !('speechSynthesis' in window)) return;
+  const u = new SpeechSynthesisUtterance(t); u.lang = 'it-IT'; if (voceIt) u.voice = voceIt; u.rate = .95; speechSynthesis.speak(u);
+}
+
+/* ---------- estrazione ---------- */
+function estrai() {
+  if (occupato) return;
+  const rimasti = []; for (let n = 1; n <= 90; n++) if (!stato.estratti.includes(n)) rimasti.push(n);
+  if (!rimasti.length) return toast('Tutti i numeri sono stati estratti');
+  occupato = true; audio();
+  const r = new Uint32Array(1); crypto.getRandomValues(r);
+  const n = rimasti[r[0] % rimasti.length];
+  const prima = calcolaVincite();
+  const g = $('#grande'), sm = $('#smorfiaG');
+  sm.classList.remove('on'); g.classList.remove('esce'); g.classList.add('gira');
+  $('#velo').classList.add('on');
+  let i = 0;
+  const giri = setInterval(() => { g.textContent = rimasti[Math.floor(Math.random() * rimasti.length)]; suonoTic(i++); }, 70);
+  setTimeout(() => {
+    clearInterval(giri);
+    g.classList.remove('gira'); void g.offsetWidth; g.classList.add('esce'); g.textContent = n;
+    suonoUscita();
+    if (opz.smorfia) { $('#gEmoji').innerHTML = smorfiaHtml(n); $('#gDial').textContent = SMORFIA[n][0]; $('#gIta').textContent = SMORFIA[n][1] !== SMORFIA[n][0] ? SMORFIA[n][1] : ''; sm.classList.add('on'); }
+    stato.estratti.push(n); salvaStato();
+    setTimeout(() => parla(numeroInLettere(n) + (opz.voceSmorfia && opz.smorfia ? '. ' + SMORFIA[n][1] : '')), 350);
+    const dopo = calcolaVincite();
+    codaVincite = premi.map((p, pi) => (!prima[pi] && dopo[pi]) ? { p, a: dopo[pi] } : null).filter(Boolean);
+    occupato = false;
+    timerVelo = setTimeout(chiudiVelo, codaVincite.length ? 2600 : 4200);
+  }, 1300);
+}
+function chiudiVelo() {
+  clearTimeout(timerVelo);
+  if (!$('#velo').classList.contains('on')) return;
+  $('#velo').classList.remove('on');
+  aggiornaVista(stato.estratti[stato.estratti.length - 1]);
+  if (codaVincite.length) setTimeout(prossimaVincita, 450);
+}
+function miniCartella(c, riga) {
+  const s = new Set(stato.estratti);
+  return '<div class="mini">' + c.griglia.map((r, ri) => r.map(n => n ? `<b class="${s.has(n) ? 'x' : ''}${ri === riga ? ' r' : ''}">${n}</b>` : '<b class="v"></b>').join('')).join('') + '</div>';
+}
+function prossimaVincita() {
+  const v = codaVincite.shift(); if (!v) return;
+  const { p, a } = v, nomeP = p.nome || TIPI[p.tipo];
+  const lista = a.vincitori.slice(0, 4).map(x => {
+    const c = cartelle[x.i];
+    return `<div><div class="chi">${esc(nomeCorto(c))}<small>${esc(classeInd(c))} · cartella n. ${esc(c.codice)}</small></div>${a.vincitori.length <= 2 ? miniCartella(c, x.riga) : ''}</div>`;
+  }).join('') + (a.vincitori.length > 4 ? `<div class="sotto">… e altri ${a.vincitori.length - 4}</div>` : '');
+  $('#vinciBox').innerHTML = `<div class="titolo">${esc(nomeP.toUpperCase())}!</div><div class="sotto">${a.vincitori.length > 1 ? 'Vincono a pari merito' : 'Ha vinto'}</div><div class="lista">${lista}</div>${p.premio ? `<div class="prem">🎁 ${esc(p.premio)}</div>` : ''}<div class="continua">Clicca per continuare</div>`;
+  $('#vinci').classList.add('on');
+  suonoVittoria(); coriandoli();
+  const nomi = a.vincitori.slice(0, 4).map(x => { const c = cartelle[x.i]; return `${c.nome} ${c.cognome}, ${c.classe.replace('ª', '')} ${INDIRIZZI[c.indirizzo]?.nome || ''}`; }).join('; ');
+  setTimeout(() => parla(`${nomeP}! ${a.vincitori.length > 1 ? 'Vincono' : 'Ha vinto'} ${nomi}`), 900);
+}
+function chiudiVincita() { $('#vinci').classList.remove('on'); stopCoriandoli(); if (codaVincite.length) setTimeout(prossimaVincita, 400); }
+
+/* ---------- coriandoli ---------- */
+let corAnim = null;
+function coriandoli() {
+  const cv = $('#coriandoli'), ctx = cv.getContext('2d');
+  cv.width = innerWidth; cv.height = innerHeight;
+  const col = ['#FDB300', '#109FAC', '#97D500', '#ED40F1', '#FE114A', '#ffffff'];
+  const pz = Array.from({ length: 220 }, () => ({ x: Math.random() * cv.width, y: -Math.random() * cv.height, w: 6 + Math.random() * 8, h: 10 + Math.random() * 10, c: col[Math.floor(Math.random() * col.length)], vy: 2 + Math.random() * 4, vx: -1.5 + Math.random() * 3, r: Math.random() * 6, vr: -.2 + Math.random() * .4 }));
+  const t0 = performance.now();
+  cancelAnimationFrame(corAnim);
+  (function f(t) {
+    ctx.clearRect(0, 0, cv.width, cv.height);
+    pz.forEach(p => { p.y += p.vy; p.x += p.vx; p.r += p.vr; ctx.save(); ctx.translate(p.x, p.y); ctx.rotate(p.r); ctx.fillStyle = p.c; ctx.fillRect(-p.w / 2, -p.h / 2, p.w, p.h); ctx.restore(); });
+    if (t - t0 < 6000) corAnim = requestAnimationFrame(f); else ctx.clearRect(0, 0, cv.width, cv.height);
+  })(t0);
+}
+function stopCoriandoli() { cancelAnimationFrame(corAnim); const cv = $('#coriandoli'); cv.getContext('2d').clearRect(0, 0, cv.width, cv.height); }
+
+/* ---------- cartelle ---------- */
+async function caricaCartelle(silenzioso) {
+  try {
+    const r = await Archivio.elenco(pin);
+    if (!r.ok) { if (!silenzioso) toast(r.errore || 'Errore nel caricare le cartelle'); return false; }
+    cartelle = r.cartelle.filter(c => codiceValido(c.codice)).map(c => ({ ...c, griglia: cartellaDaCodice(c.codice) }));
+    LS.set('tombola_cache_cartelle', cartelle);
+    disegnaPremi();
+    if (!silenzioso) toast(`🎟️ ${cartelle.length} cartelle caricate`);
+    return true;
+  } catch (e) { if (!silenzioso) toast('Connessione assente: uso le cartelle già caricate'); return false; }
+}
+setInterval(() => { if (!occupato && !$('#velo').classList.contains('on')) caricaCartelle(true); }, 45000);
+
+/* ---------- impostazioni ---------- */
+function righePremi() {
+  $('#righePremi').innerHTML = premi.map((p, i) => `<div class="riga" data-i="${i}">
+    <div class="ord"><button data-su="${i}">▲</button><button data-giu="${i}">▼</button></div>
+    <input data-k="nome" value="${esc(p.nome)}" placeholder="${TIPI[p.tipo]}">
+    <select data-k="tipo">${Object.entries(TIPI).map(([k, v]) => `<option value="${k}"${k === p.tipo ? ' selected' : ''}>${k === 'T2' ? 'Seconda tombola' : k === 'T' ? 'Tombola (15 numeri)' : v + ' (' + k + ' sulla riga)'}</option>`).join('')}</select>
+    <input data-k="premio" value="${esc(p.premio)}" placeholder="Es. Buono libreria 20 €">
+    <button class="del" data-del="${i}" title="Elimina">✕</button></div>`).join('');
+}
+function leggiRighe() {
+  document.querySelectorAll('#righePremi .riga').forEach(r => { const p = premi[+r.dataset.i]; r.querySelectorAll('[data-k]').forEach(el => p[el.dataset.k] = el.value.trim()); });
+}
+$('#righePremi').addEventListener('click', e => {
+  const b = e.target.closest('button'); if (!b) return; leggiRighe();
+  if (b.dataset.del) premi.splice(+b.dataset.del, 1);
+  if (b.dataset.su && +b.dataset.su > 0) { const i = +b.dataset.su; [premi[i - 1], premi[i]] = [premi[i], premi[i - 1]]; }
+  if (b.dataset.giu && +b.dataset.giu < premi.length - 1) { const i = +b.dataset.giu; [premi[i + 1], premi[i]] = [premi[i], premi[i + 1]]; }
+  righePremi();
+});
+$('#aggiungi').onclick = () => { leggiRighe(); premi.push({ nome: '', tipo: '2', premio: '' }); righePremi(); };
+$('#predef').onclick = () => { if (confirm('Ripristinare i premi standard? I testi dei premi verranno cancellati.')) { premi = JSON.parse(JSON.stringify(PREMI_STANDARD)); righePremi(); } };
+function apriImp() {
+  righePremi(); $('#oSmorfia').checked = opz.smorfia; $('#oVoceSmorfia').checked = opz.voceSmorfia; $('#oPin').value = pin;
+  $('#infoArchivio').textContent = Archivio.modalitaProva ? 'Modalità prova: le cartelle arrivano da questo browser (pagina Genera aperta su questo PC).' : `Cartelle caricate dal foglio Google: ${cartelle.length}. Si aggiornano da sole ogni 45 secondi.`;
+  $('#msgImp').textContent = ''; $('#modale').classList.add('on');
+}
+$('#ricarica').onclick = async () => { pin = $('#oPin').value.trim(); LS.set('tombola_pin_tab', pin); $('#msgImp').textContent = 'Carico…'; const ok = await caricaCartelle(true); $('#msgImp').textContent = ok ? `Fatto: ${cartelle.length} cartelle.` : 'Non riesco a caricare: controlla il codice operatore e la connessione.'; };
+$('#nuova').onclick = () => { if (confirm('Iniziare una NUOVA PARTITA? Tutti i numeri estratti verranno azzerati.')) { stato = { estratti: [] }; salvaStato(); aggiornaVista(); $('#modale').classList.remove('on'); toast('Nuova partita!'); } };
+$('#chiudi').onclick = () => { leggiRighe(); salvaPremi(); opz.smorfia = $('#oSmorfia').checked; opz.voceSmorfia = $('#oVoceSmorfia').checked; salvaOpz(); $('#modale').classList.remove('on'); aggiornaVista(); };
+
+/* ---------- tasti ---------- */
+function aggiornaTasti() { $('#tVoce').classList.toggle('off', !opz.voce); $('#tSuoni').classList.toggle('off', !opz.suoni); }
+$('#tVoce').onclick = e => { e.stopPropagation(); opz.voce = !opz.voce; salvaOpz(); aggiornaTasti(); toast(opz.voce ? 'Voce attiva' : 'Voce spenta'); };
+$('#tSuoni').onclick = e => { e.stopPropagation(); opz.suoni = !opz.suoni; salvaOpz(); aggiornaTasti(); toast(opz.suoni ? 'Effetti sonori attivi' : 'Effetti sonori spenti'); };
+$('#tAnnulla').onclick = e => { e.stopPropagation(); annulla(); };
+$('#tImpost').onclick = e => { e.stopPropagation(); apriImp(); };
+$('#tCartelle').onclick = e => { e.stopPropagation(); caricaCartelle(false); };
+$('#tSchermo').onclick = e => { e.stopPropagation(); if (document.fullscreenElement) document.exitFullscreen(); else document.documentElement.requestFullscreen().catch(() => {}); };
+function annulla() {
+  const n = stato.estratti[stato.estratti.length - 1]; if (!n) return toast('Nessun numero da annullare');
+  if (!confirm(`Annullare l'ultimo numero estratto (${n})?`)) return;
+  stato.estratti.pop(); salvaStato(); aggiornaVista(); toast(`Numero ${n} annullato`);
+}
+function azione() {
+  if ($('#modale').classList.contains('on') || $('#avvio').style.display !== 'none') return;
+  if ($('#vinci').classList.contains('on')) return chiudiVincita();
+  if ($('#velo').classList.contains('on')) { if (!occupato) chiudiVelo(); return; }
+  estrai();
+}
+document.body.addEventListener('click', e => { if (e.target.closest('.tasti,.modale,.avvio')) return; azione(); });
+document.addEventListener('keydown', e => {
+  if (e.target.matches('input,select,textarea')) return;
+  if ([' ', 'Enter', 'PageDown', 'ArrowRight', 'ArrowDown'].includes(e.key)) { e.preventDefault(); azione(); }
+  else if (e.key === 'z' && (e.ctrlKey || e.metaKey)) { e.preventDefault(); annulla(); }
+  else if (e.key === 'f' || e.key === 'F') $('#tSchermo').click();
+  else if (e.key === 'Escape') { if ($('#vinci').classList.contains('on')) chiudiVincita(); }
+});
+
+/* ---------- avvio ---------- */
+async function avvia() {
+  const err = $('#avvioErr'); err.textContent = '';
+  if (!Archivio.modalitaProva) { pin = $('#avvioPin').value.trim(); if (!pin) return err.textContent = 'Inserisci il codice operatore'; }
+  $('#avvioVai').textContent = 'Carico le cartelle…';
+  const ok = await caricaCartelle(true);
+  $('#avvioVai').textContent = 'Inizia';
+  if (!ok && !cartelle.length && !Archivio.modalitaProva) return err.textContent = 'Codice errato o connessione assente.';
+  LS.set('tombola_pin_tab', pin);
+  audio(); // sblocca l'audio
+  $('#avvio').style.display = 'none';
+  document.documentElement.requestFullscreen?.().catch(() => {});
+  toast(`🎟️ ${cartelle.length} cartelle in gioco`);
+}
+$('#avvioPin').value = pin;
+if (Archivio.modalitaProva) { $('#avvioPin').style.display = 'none'; $('#avvioTesto').textContent = 'Modalità prova: le cartelle sono quelle generate in questo browser.'; }
+$('#avvioVai').onclick = avvia;
+$('#avvioPin').addEventListener('keydown', e => { if (e.key === 'Enter') avvia(); });
+aggiornaTasti(); aggiornaVista();
+</script>
+</body>
+</html>

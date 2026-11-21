@@ -1,0 +1,147 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>Le mie cartelle · Tombola Moro</title>
+<meta name="robots" content="noindex">
+<link rel="icon" href="../favicon-32.png">
+<link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@600;700;800&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+:root{--navy:#002A64;--gold:#FDB300;--teal:#109FAC;--green:#97D500;--mag:#ED40F1;--red:#FE114A;--c:#109FAC}
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:Inter,system-ui,sans-serif;background:#F3F6FB;color:#0d1b33;-webkit-tap-highlight-color:transparent}
+header{background:var(--navy);color:#fff;padding:16px 16px 18px;text-align:center}
+header img{height:48px}
+header h1{font-family:Poppins,sans-serif;font-size:20px;margin-top:8px}
+header h1 span{color:var(--gold)}
+.chi{margin-top:6px;font-weight:600;font-size:16px}
+.chi b{font-family:Poppins,sans-serif;font-size:18px}
+.strip{height:6px;background:linear-gradient(90deg,var(--teal) 0 20%,var(--green) 20% 40%,var(--gold) 40% 60%,var(--mag) 60% 80%,var(--red) 80%)}
+main{max-width:640px;margin:0 auto;padding:14px 10px 40px}
+.suggerimento{text-align:center;color:#40527a;font-size:14px;margin:4px 0 12px}
+.cartella{background:#fff;border-radius:14px;box-shadow:0 4px 16px rgba(0,42,100,.1);margin-bottom:16px;overflow:hidden;border:3px solid var(--c)}
+.cartella .testa{background:var(--c);color:#fff;display:flex;justify-content:space-between;align-items:center;padding:6px 12px;font:700 14px Poppins,sans-serif}
+.cartella .testa .cont{font:600 13px Inter,sans-serif;opacity:.95}
+.griglia{display:grid;grid-template-columns:repeat(9,1fr);gap:3px;padding:6px;background:#E3E9F3}
+.cella{aspect-ratio:1/1.05;background:#fff;border-radius:6px;display:flex;align-items:center;justify-content:center;font:800 clamp(16px,5.2vw,28px) Poppins,sans-serif;color:var(--navy);position:relative;user-select:none;cursor:pointer}
+.cella.vuota{background:repeating-linear-gradient(45deg,#F0F3F9 0 6px,#E8EDF6 6px 12px);cursor:default}
+.cella.segnata::after{content:'';position:absolute;inset:12%;border-radius:50%;background:rgba(253,179,0,.85);box-shadow:inset 0 -3px 0 rgba(0,0,0,.15)}
+.cella span{position:relative;z-index:1}
+.azioni{display:flex;gap:10px;margin:6px 0 14px}
+.btn{flex:1;border:0;border-radius:14px;padding:15px 10px;font:800 16px Poppins,sans-serif;cursor:pointer;background:var(--gold);color:var(--navy)}
+.btn.sec{background:#fff;border:2px solid var(--navy);color:var(--navy);flex:.6}
+.info{background:#fff;border-radius:14px;padding:12px 14px;font-size:14px;color:#40527a;line-height:1.45}
+.info b{color:var(--navy)}
+.errore{background:#fff;border-radius:14px;padding:24px;text-align:center;font-size:16px}
+footer{text-align:center;color:#7a8aa8;font-size:12px;padding:16px 0 30px}
+</style>
+</head>
+<body>
+<header>
+  <img src="../logo-iiss-aldo-moro-bianco.png" alt="IISS Aldo Moro Trani">
+  <h1>Tombola <span>Moro</span></h1>
+  <div class="chi" id="chi"></div>
+</header>
+<div class="strip"></div>
+<main>
+  <p class="suggerimento">👆 Tocca un numero per segnarlo (toccalo di nuovo per togliere il segno)</p>
+  <div id="cartelle"></div>
+  <div class="azioni">
+    <button class="btn" id="pdf">⬇️ Scarica PDF</button>
+    <button class="btn sec" id="pulisci">Togli i segni</button>
+  </div>
+  <div class="info">
+    <b>Telefono scarico?</b> Scarica il PDF: puoi stamparlo o ricopiare le cartelle su un foglio.<br>
+    <b>Le vincite le riconosce il tabellone</b>: quando fai ambo, terno… compare il tuo nome sullo schermo!
+  </div>
+  <footer>IISS "Aldo Moro – S. Cosmai" · Trani</footer>
+</main>
+<script src="lib/jspdf.umd.min.js"></script>
+<script src="common.js"></script>
+<script>
+const $ = s => document.querySelector(s);
+const p = new URLSearchParams(location.hash.slice(1) || location.search.slice(1));
+const codici = (p.get('c') || '').split('.').filter(codiceValido).slice(0, 6);
+const nome = p.get('n') || '', classe = p.get('k') || '';
+const indKey = Object.keys(INDIRIZZI).find(k => classe.endsWith(INDIRIZZI[k].nome));
+const colore = indKey ? INDIRIZZI[indKey].colore : '#109FAC';
+document.documentElement.style.setProperty('--c', colore);
+
+if (!codici.length) {
+  $('#cartelle').innerHTML = '<div class="errore">Link non valido 😕<br>Fatti rigenerare il QR.</div>';
+  document.querySelector('.azioni').style.display = 'none';
+} else {
+  $('#chi').innerHTML = `<b>${esc(nome)}</b>${classe ? ' · ' + esc(classe) : ''}`;
+  document.title = 'Cartelle di ' + nome + ' · Tombola Moro';
+}
+const chiaveSegni = 'tombola_segni_' + codici.join('.');
+let segni = {}; try { segni = JSON.parse(localStorage.getItem(chiaveSegni) || '{}'); } catch (e) {}
+const salva = () => { try { localStorage.setItem(chiaveSegni, JSON.stringify(segni)); } catch (e) {} };
+const griglie = codici.map(cartellaDaCodice);
+
+function disegna() {
+  $('#cartelle').innerHTML = griglie.map((g, i) => {
+    const c = codici[i], s = new Set(segni[c] || []);
+    const celle = g.flat().map(n => n ? `<div class="cella${s.has(n) ? ' segnata' : ''}" data-c="${c}" data-n="${n}"><span>${n}</span></div>` : '<div class="cella vuota"></div>').join('');
+    return `<div class="cartella"><div class="testa"><span>Cartella n. ${c}</span><span class="cont">${s.size}/15 segnati</span></div><div class="griglia">${celle}</div></div>`;
+  }).join('');
+}
+disegna();
+$('#cartelle').addEventListener('click', e => {
+  const el = e.target.closest('.cella[data-n]'); if (!el) return;
+  const c = el.dataset.c, n = +el.dataset.n;
+  const s = new Set(segni[c] || []); s.has(n) ? s.delete(n) : s.add(n);
+  segni[c] = [...s]; salva();
+  el.classList.toggle('segnata', s.has(n));
+  el.closest('.cartella').querySelector('.cont').textContent = s.size + '/15 segnati';
+  if (navigator.vibrate) navigator.vibrate(15);
+});
+$('#pulisci').onclick = () => { if (confirm('Togliere tutti i segni dalle cartelle?')) { segni = {}; salva(); disegna(); } };
+
+async function immagine(src) {
+  return new Promise(res => {
+    const im = new Image(); im.crossOrigin = 'anonymous';
+    im.onload = () => { const cv = document.createElement('canvas'); cv.width = im.naturalWidth; cv.height = im.naturalHeight; cv.getContext('2d').drawImage(im, 0, 0); try { res({ data: cv.toDataURL('image/png'), w: im.naturalWidth, h: im.naturalHeight }); } catch (e) { res(null); } };
+    im.onerror = () => res(null); im.src = src;
+  });
+}
+function hexRgb(h) { const n = parseInt(h.slice(1), 16); return [n >> 16, (n >> 8) & 255, n & 255]; }
+
+$('#pdf').onclick = async () => {
+  const { jsPDF } = window.jspdf;
+  const doc = new jsPDF({ unit: 'mm', format: 'a4' });
+  const logo = await immagine('../logo-iiss-aldo-moro.png');
+  const W = 210, M = 15, larg = W - 2 * M, cw = larg / 9, ch = 15;
+  let y = 14;
+  if (logo) { const h = 18, w = h * logo.w / logo.h; doc.addImage(logo.data, 'PNG', M, y, w, h); }
+  doc.setFont('helvetica', 'bold'); doc.setTextColor(0, 42, 100); doc.setFontSize(20);
+  doc.text('TOMBOLA MORO', W - M, y + 8, { align: 'right' });
+  doc.setFontSize(12); doc.setFont('helvetica', 'normal');
+  doc.text(`${nome}${classe ? ' · ' + classe : ''}`, W - M, y + 15, { align: 'right' });
+  y += 26;
+  const col = hexRgb(colore);
+  griglie.forEach((g, i) => {
+    if (y + 10 + 3 * ch > 285) { doc.addPage(); y = 15; }
+    doc.setFillColor(...col); doc.rect(M, y, larg, 8, 'F');
+    doc.setTextColor(indKey === 'EOA' ? 0 : 255, indKey === 'EOA' ? 42 : 255, indKey === 'EOA' ? 100 : 255);
+    doc.setFont('helvetica', 'bold'); doc.setFontSize(11);
+    doc.text(`Cartella n. ${codici[i]}`, M + 3, y + 5.6);
+    y += 8;
+    doc.setDrawColor(0, 42, 100); doc.setLineWidth(0.4);
+    g.forEach((riga, r) => riga.forEach((n, c) => {
+      const x = M + c * cw, yy = y + r * ch;
+      if (!n) { doc.setFillColor(232, 237, 246); doc.rect(x, yy, cw, ch, 'FD'); }
+      else { doc.setFillColor(255, 255, 255); doc.rect(x, yy, cw, ch, 'FD'); doc.setTextColor(0, 42, 100); doc.setFontSize(22); doc.text(String(n), x + cw / 2, yy + ch / 2 + 2.8, { align: 'center' }); }
+    }));
+    doc.setLineWidth(1); doc.setDrawColor(...col); doc.rect(M, y - 8, larg, 8 + 3 * ch);
+    y += 3 * ch + 10;
+  });
+  doc.setFontSize(9); doc.setTextColor(110, 125, 150); doc.setFont('helvetica', 'normal');
+  doc.text('IISS "Aldo Moro - S. Cosmai" Trani · Tombola Moro', W / 2, 290, { align: 'center' });
+  doc.save(`Tombola_${(nome || 'cartelle').replace(/[^\p{L}\p{N}]+/gu, '_')}.pdf`);
+};
+</script>
+</body>
+</html>
