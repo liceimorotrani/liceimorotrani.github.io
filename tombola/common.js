@@ -5,7 +5,7 @@
    Incolla qui l'indirizzo dello script Google (finisce con /exec).
    Se resta vuoto, il programma funziona in "modalità prova":
    le cartelle restano salvate solo nel browser di questo computer. */
-const TOMBOLA_SCRIPT_URL = '';
+const TOMBOLA_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbzkg2KEaXvPCiRh4h0tC8MIAz4VeB_Kygs9f-p0ju_4-uZhu1f64KOhlYOP8wo8suow/exec';
 
 const SITE_BASE = 'https://liceimorotrani.github.io/tombola/';
 
