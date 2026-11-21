@@ -25,9 +25,10 @@ label.t:first-child{margin-top:0}
 input[type=text],input[type=password]{width:100%;font:inherit;font-size:18px;padding:12px 14px;border:2px solid #D6DEEA;border-radius:12px;outline:none;background:#fff}
 input:focus{border-color:var(--teal)}
 .chips{display:flex;gap:8px;flex-wrap:wrap}
-.chip{flex:1;min-width:56px;border:2px solid #D6DEEA;background:#fff;border-radius:12px;padding:12px 6px;font:700 17px Inter,sans-serif;color:var(--navy);cursor:pointer;text-align:center}
+.chip{flex:1;min-width:40px;border:2px solid #D6DEEA;background:#fff;border-radius:12px;padding:12px 6px;font:700 17px Inter,sans-serif;color:var(--navy);cursor:pointer;text-align:center}
 .chip.on{background:var(--navy);border-color:var(--navy);color:#fff}
-.chips.ind .chip{font-size:14px;padding:12px 2px;min-width:0}
+#sezione{display:grid;grid-template-columns:repeat(8,1fr);gap:6px}#sezione .chip{min-width:0;padding:12px 0}
+.chips.ind{display:grid;grid-template-columns:1fr 1fr 1fr 1.45fr;gap:6px}.chips.ind .chip{font-size:14px;padding:12px 2px;min-width:0}
 .chips.ind .chip.on{border-color:var(--c);background:var(--c);color:#fff}
 .chips.ind .chip[data-v=EOA].on{color:var(--navy)}
 .btn{display:block;width:100%;border:0;border-radius:14px;padding:16px;font:800 18px Poppins,sans-serif;cursor:pointer;margin-top:18px;background:var(--gold);color:var(--navy)}
@@ -72,6 +73,10 @@ footer{text-align:center;color:#7a8aa8;font-size:12px;padding:10px 0 30px}
       <label class="t">Classe</label>
       <div class="chips" id="classe">
         <button class="chip" data-v="1ª">1ª</button><button class="chip" data-v="2ª">2ª</button><button class="chip" data-v="3ª">3ª</button><button class="chip" data-v="4ª">4ª</button><button class="chip" data-v="5ª">5ª</button>
+      </div>
+      <label class="t">Sezione</label>
+      <div class="chips" id="sezione">
+        <button class="chip" data-v="A">A</button><button class="chip" data-v="B">B</button><button class="chip" data-v="C">C</button><button class="chip" data-v="D">D</button><button class="chip" data-v="E">E</button><button class="chip" data-v="F">F</button><button class="chip" data-v="G">G</button><button class="chip" data-v="H">H</button>
       </div>
       <label class="t">Indirizzo</label>
       <div class="chips ind" id="indirizzo">
@@ -122,12 +127,12 @@ footer{text-align:center;color:#7a8aa8;font-size:12px;padding:10px 0 30px}
 <script src="common.js"></script>
 <script>
 const $ = s => document.querySelector(s);
-const scelta = { classe: '', indirizzo: '', quante: '2' };
+const scelta = { classe: '', sezione: '', indirizzo: '', quante: '2' };
 if (Archivio.modalitaProva) $('#prova').classList.remove('hidden');
 try { $('#pin').value = localStorage.getItem('tombola_pin') || ''; } catch (e) {}
 if (Archivio.modalitaProva) $('#boxPin').classList.add('hidden');
 
-for (const id of ['classe', 'indirizzo', 'quante']) {
+for (const id of ['classe', 'sezione', 'indirizzo', 'quante']) {
   $('#' + id).addEventListener('click', e => {
     const b = e.target.closest('.chip'); if (!b) return;
     $('#' + id).querySelectorAll('.chip').forEach(x => x.classList.toggle('on', x === b));
@@ -139,10 +144,11 @@ let ultimo = null;
 
 async function genera(forza) {
   const err = $('#err'); err.textContent = '';
-  const dati = { pin: $('#pin').value.trim(), nome: maiuscolo($('#nome').value), cognome: maiuscolo($('#cognome').value), classe: scelta.classe, indirizzo: scelta.indirizzo, quante: +scelta.quante, forza };
+  const dati = { pin: $('#pin').value.trim(), nome: maiuscolo($('#nome').value), cognome: maiuscolo($('#cognome').value), classe: scelta.classe && scelta.sezione ? scelta.classe + ' ' + scelta.sezione : '', indirizzo: scelta.indirizzo, quante: +scelta.quante, forza };
   if (forza && ultimo) Object.assign(dati, ultimo);
   if (!Archivio.modalitaProva && !dati.pin) return err.textContent = 'Inserisci il codice operatore.';
-  if (!dati.classe) return err.textContent = 'Scegli la classe.';
+  if (!scelta.classe) return err.textContent = 'Scegli la classe.';
+  if (!scelta.sezione) return err.textContent = 'Scegli la sezione.';
   if (!dati.indirizzo) return err.textContent = 'Scegli l\'indirizzo.';
   if (!dati.nome || !dati.cognome) return err.textContent = 'Scrivi nome e cognome.';
   const b = $('#genera'); b.disabled = true; b.textContent = 'Un attimo…'; $('#forza').disabled = true;
