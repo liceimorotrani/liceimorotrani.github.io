@@ -194,7 +194,8 @@ canvas#coriandoli{position:fixed;inset:0;width:100vw;height:100vh;pointer-events
     <h3>Cartelle</h3>
     <p class="n" id="infoArchivio"></p>
     <div class="opz"><label style="flex:1">Codice amministratore <input class="campo" id="oPin" type="password" style="max-width:260px"></label></div>
-    <div class="bott"><button id="ricarica">🔄 Ricarica cartelle</button></div>
+    <div class="bott"><button id="ricarica">🔄 Ricarica cartelle</button><button class="peric" id="azzeraCartelle">🗑️ Azzera tutte le cartelle</button></div>
+    <p class="n" style="margin-top:8px">“Azzera tutte le cartelle” toglie dal gioco tutte le cartelle generate finora (per esempio quelle di prova o di una tombola già fatta). Non si perdono: vengono spostate in un foglio “Archivio” del Foglio Google. Serve il codice amministratore.</p>
     <div class="msg" id="msgImp"></div>
     <h3>Vincite annullate</h3>
     <p class="n">Vincite annullate perché il vincitore non era presente. Se si presenta dopo, puoi ripristinarle.</p>
@@ -522,6 +523,22 @@ $('#listaAnnullati').addEventListener('click', e => {
   stato.annullati.splice(+b.dataset.rip, 1); salvaStato(); disegnaAnnullati(); aggiornaVista();
 });
 $('#ricarica').onclick = async () => { pin = $('#oPin').value.trim(); LS.set('tombola_admin_tab', pin); $('#msgImp').textContent = 'Carico…'; const ok = await caricaCartelle(true); $('#msgImp').textContent = ok ? `Fatto: ${cartelle.length} cartelle.` : 'Non riesco a caricare: controlla il codice amministratore e la connessione.'; };
+$('#azzeraCartelle').onclick = async () => {
+  const pinOra = $('#oPin').value.trim() || pin;
+  if (!Archivio.modalitaProva && !pinOra) { $('#msgImp').textContent = 'Scrivi il codice amministratore.'; return; }
+  if (!(await chiedi(`Azzerare TUTTE le cartelle (${cartelle.length})?\n\nNon varranno più per il tabellone e i ragazzi dovranno generarne di nuove. Restano salvate nel Foglio Google, in un foglio “Archivio”.`, { si: 'Sì, azzera le cartelle', pericolo: true }))) return;
+  $('#msgImp').textContent = 'Azzero…';
+  try {
+    const r = await Archivio.archivia(pinOra);
+    if (!r.ok) { $('#msgImp').textContent = r.errore || 'Errore'; return; }
+    pin = pinOra; LS.set('tombola_admin_tab', pin);
+    cartelle = []; LS.set('tombola_cache_cartelle', []);
+    let msg = `Fatto: ${r.archiviate} cartelle azzerate (copiate nel foglio Archivio).`;
+    if (stato.estratti.length && await chiedi('Vuoi azzerare anche i numeri già estratti e iniziare una nuova partita?', { si: 'Sì, nuova partita' })) { stato = { estratti: [], annullati: [] }; salvaStato(); msg += ' Nuova partita pronta.'; }
+    aggiornaVista(); $('#infoArchivio').textContent = 'Cartelle caricate dal foglio Google: 0.';
+    $('#msgImp').textContent = msg; toast('🗑️ Cartelle azzerate');
+  } catch (e) { $('#msgImp').textContent = 'Connessione assente. Riprova.'; }
+};
 $('#nuova').onclick = async () => { if (await chiedi('Iniziare una NUOVA PARTITA?\nTutti i numeri estratti verranno azzerati.', { si: 'Sì, nuova partita', pericolo: true })) { stato = { estratti: [], annullati: [] }; salvaStato(); aggiornaVista(); $('#modale').classList.remove('on'); toast('Nuova partita!'); } };
 $('#chiudi').onclick = () => { leggiRighe(); salvaPremi(); opz.smorfia = $('#oSmorfia').checked; opz.voceSmorfia = $('#oVoceSmorfia').checked; salvaOpz(); $('#modale').classList.remove('on'); aggiornaVista(); };
 
