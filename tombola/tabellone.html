@@ -189,7 +189,8 @@ canvas#coriandoli{position:fixed;inset:0;width:100vw;height:100vh;pointer-events
     <h3>Opzioni</h3>
     <div class="opz">
       <label><input type="checkbox" id="oSmorfia"> Mostra la smorfia</label>
-      <label><input type="checkbox" id="oVoceSmorfia"> La voce legge anche la smorfia</label>
+      <label><input type="checkbox" id="oVoceNap"> La voce legge la smorfia in napoletano</label>
+      <label><input type="checkbox" id="oVoceIta"> La voce legge la smorfia in italiano</label>
     </div>
     <h3>Cartelle</h3>
     <p class="n" id="infoArchivio"></p>
@@ -239,7 +240,15 @@ if (!stato.annullati) stato.annullati = [];
 let premi = LS.get('tombola_premi', null) || JSON.parse(JSON.stringify(PREMI_STANDARD));
 // premi salvati con la versione precedente (un solo premio per tipo): aggiungo le quantità standard
 if (premi.some(p => p.quanti === undefined)) { premi.forEach(p => { if (p.quanti === undefined) p.quanti = QUANTI_STANDARD[p.tipo] || 1; if (p.nome === 'Tombolicchio') p.nome = 'Tombolino'; }); LS.set('tombola_premi', premi); }
-let opz = Object.assign({ voce: true, suoni: true, smorfia: true, voceSmorfia: true }, LS.get('tombola_opzioni', {}));
+let opz = Object.assign({ voce: true, suoni: true, smorfia: true }, LS.get('tombola_opzioni', {}));
+if (opz.voceNap === undefined) { opz.voceNap = opz.voceSmorfia !== false; opz.voceIta = opz.voceSmorfia !== false; } // dalla vecchia opzione unica
+// testo letto dalla voce: numero, poi smorfia in napoletano e/o in italiano (se uguali la legge una volta)
+function testoVoce(n) {
+  const [nap, ita] = SMORFIA[n], parti = [numeroInLettere(n)];
+  if (opz.voceNap) parti.push(nap);
+  if (opz.voceIta && !(opz.voceNap && ita.toLowerCase() === nap.toLowerCase())) parti.push(ita);
+  return parti.join('. ');
+}
 let pin = LS.get('tombola_admin_tab', '');
 let cartelle = LS.get('tombola_cache_cartelle', []); // {codice,nome,cognome,classe,indirizzo,griglia}
 let assegnati = []; // per premio: {vinti:[{k, i, riga}], sorteggi:[{k, candidati, posti}]}
@@ -393,7 +402,7 @@ function estrai() {
     suonoUscita();
     if (opz.smorfia) { $('#gEmoji').innerHTML = smorfiaHtml(n); $('#gDial').textContent = SMORFIA[n][0]; $('#gIta').textContent = SMORFIA[n][1] !== SMORFIA[n][0] ? SMORFIA[n][1] : ''; sm.classList.add('on'); }
     stato.estratti.push(n); salvaStato();
-    setTimeout(() => parla(numeroInLettere(n) + (opz.voceSmorfia && opz.smorfia ? '. ' + SMORFIA[n][1] : '')), 350);
+    setTimeout(() => parla(testoVoce(n)), 350);
     const dopo = calcolaVincite();
     codaVincite = nuoveVincite(prima, dopo);
     occupato = false;
@@ -509,7 +518,7 @@ $('#righePremi').addEventListener('click', e => {
 $('#aggiungi').onclick = () => { leggiRighe(); premi.push({ nome: '', tipo: '2', quanti: 1, premio: '' }); righePremi(); };
 $('#predef').onclick = async () => { if (await chiedi('Ripristinare i premi standard? I testi dei premi verranno cancellati.', { si: 'Ripristina' })) { premi = JSON.parse(JSON.stringify(PREMI_STANDARD)); righePremi(); } };
 function apriImp() {
-  righePremi(); $('#oSmorfia').checked = opz.smorfia; $('#oVoceSmorfia').checked = opz.voceSmorfia; $('#oPin').value = pin;
+  righePremi(); $('#oSmorfia').checked = opz.smorfia; $('#oVoceNap').checked = opz.voceNap; $('#oVoceIta').checked = opz.voceIta; $('#oPin').value = pin;
   $('#infoArchivio').textContent = Archivio.modalitaProva ? 'Modalità prova: le cartelle arrivano da questo browser (pagina Genera aperta su questo PC).' : `Cartelle caricate dal foglio Google: ${cartelle.length}. Si aggiornano da sole ogni 45 secondi.`;
   disegnaAnnullati();
   $('#msgImp').textContent = ''; $('#modale').classList.add('on');
@@ -540,7 +549,7 @@ $('#azzeraCartelle').onclick = async () => {
   } catch (e) { $('#msgImp').textContent = 'Connessione assente. Riprova.'; }
 };
 $('#nuova').onclick = async () => { if (await chiedi('Iniziare una NUOVA PARTITA?\nTutti i numeri estratti verranno azzerati.', { si: 'Sì, nuova partita', pericolo: true })) { stato = { estratti: [], annullati: [] }; salvaStato(); aggiornaVista(); $('#modale').classList.remove('on'); toast('Nuova partita!'); } };
-$('#chiudi').onclick = () => { leggiRighe(); salvaPremi(); opz.smorfia = $('#oSmorfia').checked; opz.voceSmorfia = $('#oVoceSmorfia').checked; salvaOpz(); $('#modale').classList.remove('on'); aggiornaVista(); };
+$('#chiudi').onclick = () => { leggiRighe(); salvaPremi(); opz.smorfia = $('#oSmorfia').checked; opz.voceNap = $('#oVoceNap').checked; opz.voceIta = $('#oVoceIta').checked; salvaOpz(); $('#modale').classList.remove('on'); aggiornaVista(); };
 
 /* ---------- tasti ---------- */
 function aggiornaTasti() { $('#tVoce').classList.toggle('off', !opz.voce); $('#tSuoni').classList.toggle('off', !opz.suoni); }
