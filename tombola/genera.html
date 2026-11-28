@@ -122,6 +122,11 @@ footer{text-align:center;color:#7a8aa8;font-size:12px;padding:10px 0 30px}
       <div class="err" id="err"></div>
     </div>
 
+    <div class="card" id="boxAdmin" style="margin-top:22px">
+      <label class="t" for="pinAdmin" style="margin-top:0">🔐 Codice amministratore (solo per il prof)</label>
+      <input id="pinAdmin" type="password" autocomplete="off" placeholder="Serve per gestire, eliminare e archiviare">
+    </div>
+
     <details id="gestione">
       <summary>Gestisci cartelle (per il prof)</summary>
       <div class="card" style="margin-top:10px">
@@ -162,13 +167,15 @@ footer{text-align:center;color:#7a8aa8;font-size:12px;padding:10px 0 30px}
 </main>
 
 <script src="lib/qrcode.js"></script>
-<script src="common.js?v=2611212210"></script>
+<script src="common.js?v=2611281100"></script>
 <script>
 const $ = s => document.querySelector(s);
 const scelta = { tipo: 'alunno', classe: '', sezione: '', indirizzo: '', quante: '2' };
 if (Archivio.modalitaProva) $('#prova').classList.remove('hidden');
 try { $('#pin').value = localStorage.getItem('tombola_pin') || ''; } catch (e) {}
-if (Archivio.modalitaProva) $('#boxPin').classList.add('hidden');
+// il codice amministratore non viene mai salvato sul telefono: va scritto ogni volta
+if (Archivio.modalitaProva) { $('#boxPin').classList.add('hidden'); $('#boxAdmin').classList.add('hidden'); }
+const pinAdmin = () => $('#pinAdmin').value.trim();
 
 for (const id of ['tipo', 'classe', 'sezione', 'indirizzo', 'quante']) {
   $('#' + id).addEventListener('click', e => {
@@ -281,8 +288,8 @@ $('#nuovo').onclick = () => {
 let gruppi = [];
 async function caricaLista() {
   const e = $('#errLista'); e.textContent = '';
-  const pin = $('#pin').value.trim();
-  if (!Archivio.modalitaProva && !pin) { e.textContent = 'Inserisci prima il codice operatore (in alto).'; return; }
+  const pin = pinAdmin();
+  if (!Archivio.modalitaProva && !pin) { $('#riepilogo').textContent = ''; $('#listaCartelle').innerHTML = ''; e.textContent = 'Scrivi il codice amministratore (qui sopra) e tocca “Aggiorna elenco”.'; return; }
   $('#riepilogo').textContent = 'Carico…';
   try {
     const r = await Archivio.elenco(pin);
@@ -302,6 +309,7 @@ function mostraLista() {
 }
 $('#gestione').addEventListener('toggle', () => { if ($('#gestione').open) caricaLista(); });
 $('#aggiornaLista').onclick = caricaLista;
+$('#pinAdmin').addEventListener('change', () => { if ($('#gestione').open) caricaLista(); });
 $('#cerca').addEventListener('input', mostraLista);
 $('#listaCartelle').addEventListener('click', async ev => {
   const b = ev.target.closest('button[data-k]'); if (!b) return;
@@ -309,7 +317,7 @@ $('#listaCartelle').addEventListener('click', async ev => {
   if (!(await chiedi(`Eliminare le ${g.codici.length} cartelle di ${g.cognome} ${g.nome} (${g.classe} ${INDIRIZZI[g.indirizzo]?.nome || ''})?\n\nLe cartelle non varranno più per la tombola.`, { si: 'Elimina', pericolo: true }))) return;
   b.disabled = true; b.textContent = '…';
   try {
-    const r = await Archivio.elimina($('#pin').value.trim(), g.codici);
+    const r = await Archivio.elimina(pinAdmin(), g.codici);
     if (!r.ok) { $('#errLista').textContent = r.errore || 'Errore'; b.disabled = false; b.textContent = '🗑️ Elimina'; return; }
     await caricaLista();
     $('#errLista').innerHTML = `<span style="color:#0b7a3e">✓ Eliminate le cartelle di ${esc(g.cognome + ' ' + g.nome)} (${r.eliminate}).</span>`;
@@ -318,8 +326,9 @@ $('#listaCartelle').addEventListener('click', async ev => {
 
 $('#archivia').onclick = async () => {
   const e = $('#errArch'); e.textContent = '';
+  if (!Archivio.modalitaProva && !pinAdmin()) return e.textContent = 'Scrivi prima il codice amministratore (più in alto).';
   if (!(await chiedi('Archiviare TUTTE le cartelle generate finora?\nIl tabellone non le considererà più (restano nel foglio Google, in un foglio “Archivio”).', { si: 'Archivia', pericolo: true }))) return;
-  try { const r = await Archivio.archivia($('#pin').value.trim()); e.textContent = r.ok ? `Fatto: ${r.archiviate} cartelle archiviate.` : (r.errore || 'Errore'); }
+  try { const r = await Archivio.archivia(pinAdmin()); e.textContent = r.ok ? `Fatto: ${r.archiviate} cartelle archiviate.` : (r.errore || 'Errore'); }
   catch (x) { e.textContent = 'Connessione assente. Riprova.'; }
 };
 </script>

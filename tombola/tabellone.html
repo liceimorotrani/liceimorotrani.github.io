@@ -186,7 +186,7 @@ canvas#coriandoli{position:fixed;inset:0;width:100vw;height:100vh;pointer-events
     </div>
     <h3>Cartelle</h3>
     <p class="n" id="infoArchivio"></p>
-    <div class="opz"><label style="flex:1">Codice operatore <input class="campo" id="oPin" type="password" style="max-width:260px"></label></div>
+    <div class="opz"><label style="flex:1">Codice amministratore <input class="campo" id="oPin" type="password" style="max-width:260px"></label></div>
     <div class="bott"><button id="ricarica">🔄 Ricarica cartelle</button></div>
     <div class="msg" id="msgImp"></div>
     <h3>Vincite annullate</h3>
@@ -202,13 +202,13 @@ canvas#coriandoli{position:fixed;inset:0;width:100vw;height:100vh;pointer-events
 <div class="avvio" id="avvio">
   <img src="../logo-iiss-aldo-moro-bianco.png" alt="">
   <h2>TOMBOLA <span>MORO</span></h2>
-  <p id="avvioTesto">Inserisci il codice operatore per caricare le cartelle degli alunni.</p>
-  <input id="avvioPin" type="password" placeholder="Codice operatore">
+  <p id="avvioTesto">Inserisci il codice amministratore per caricare le cartelle degli alunni.</p>
+  <input id="avvioPin" type="password" placeholder="Codice amministratore">
   <div class="err" id="avvioErr"></div>
   <button id="avvioVai">Inizia</button>
 </div>
 
-<script src="common.js?v=2611212210"></script>
+<script src="common.js?v=2611281100"></script>
 <script>
 const $ = s => document.querySelector(s);
 const TIPI = { '2': 'Ambo', '3': 'Terno', '4': 'Quaterna', '5': 'Cinquina', 'T': 'Tombola', 'T2': 'Seconda tombola' };
@@ -228,7 +228,7 @@ let stato = LS.get('tombola_partita', null) || { estratti: [] };
 if (!stato.annullati) stato.annullati = [];
 let premi = LS.get('tombola_premi', null) || JSON.parse(JSON.stringify(PREMI_STANDARD));
 let opz = Object.assign({ voce: true, suoni: true, smorfia: true, voceSmorfia: true }, LS.get('tombola_opzioni', {}));
-let pin = LS.get('tombola_pin_tab', '');
+let pin = LS.get('tombola_admin_tab', '');
 let cartelle = LS.get('tombola_cache_cartelle', []); // {codice,nome,cognome,classe,indirizzo,griglia}
 let assegnati = []; // per premio: {estrazione, vincitori:[{c, riga}]}
 let occupato = false, timerVelo = null, codaVincite = [];
@@ -480,7 +480,7 @@ $('#listaAnnullati').addEventListener('click', e => {
   const b = e.target.closest('[data-rip]'); if (!b) return;
   stato.annullati.splice(+b.dataset.rip, 1); salvaStato(); disegnaAnnullati(); aggiornaVista();
 });
-$('#ricarica').onclick = async () => { pin = $('#oPin').value.trim(); LS.set('tombola_pin_tab', pin); $('#msgImp').textContent = 'Carico…'; const ok = await caricaCartelle(true); $('#msgImp').textContent = ok ? `Fatto: ${cartelle.length} cartelle.` : 'Non riesco a caricare: controlla il codice operatore e la connessione.'; };
+$('#ricarica').onclick = async () => { pin = $('#oPin').value.trim(); LS.set('tombola_admin_tab', pin); $('#msgImp').textContent = 'Carico…'; const ok = await caricaCartelle(true); $('#msgImp').textContent = ok ? `Fatto: ${cartelle.length} cartelle.` : 'Non riesco a caricare: controlla il codice amministratore e la connessione.'; };
 $('#nuova').onclick = async () => { if (await chiedi('Iniziare una NUOVA PARTITA?\nTutti i numeri estratti verranno azzerati.', { si: 'Sì, nuova partita', pericolo: true })) { stato = { estratti: [], annullati: [] }; salvaStato(); aggiornaVista(); $('#modale').classList.remove('on'); toast('Nuova partita!'); } };
 $('#chiudi').onclick = () => { leggiRighe(); salvaPremi(); opz.smorfia = $('#oSmorfia').checked; opz.voceSmorfia = $('#oVoceSmorfia').checked; salvaOpz(); $('#modale').classList.remove('on'); aggiornaVista(); };
 
@@ -515,12 +515,12 @@ document.addEventListener('keydown', e => {
 /* ---------- avvio ---------- */
 async function avvia() {
   const err = $('#avvioErr'); err.textContent = '';
-  if (!Archivio.modalitaProva) { pin = $('#avvioPin').value.trim(); if (!pin) return err.textContent = 'Inserisci il codice operatore'; }
+  if (!Archivio.modalitaProva) { pin = $('#avvioPin').value.trim(); if (!pin) return err.textContent = 'Inserisci il codice amministratore'; }
   $('#avvioVai').textContent = 'Carico le cartelle…';
   const ok = await caricaCartelle(true);
   $('#avvioVai').textContent = 'Inizia';
   if (!ok && !cartelle.length && !Archivio.modalitaProva) return err.textContent = 'Codice errato o connessione assente.';
-  LS.set('tombola_pin_tab', pin);
+  LS.set('tombola_admin_tab', pin);
   audio(); // sblocca l'audio
   $('#avvio').style.display = 'none';
   document.documentElement.requestFullscreen?.().catch(() => {});

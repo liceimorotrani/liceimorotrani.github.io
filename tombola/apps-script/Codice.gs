@@ -6,9 +6,22 @@
  * e pubblicato come "App web". Salva chi ha quali cartelle e le passa al tabellone.
  */
 
-// ⬇⬇⬇ Codice operatore: scegline uno tuo (lo danno solo ai ragazzi che generano le cartelle)
+// ⬇⬇⬇ Due codici diversi (sensibili a maiuscole e spazi):
+// Codice OPERATORE: per i ragazzi che generano le cartelle (solo crea cartelle + elenco alunni)
 const PIN = 'CAMBIAMI';
+// Codice AMMINISTRATORE: solo per il prof (tabellone, elenco cartelle, elimina, archivia)
+const PIN_ADMIN = 'CAMBIAMI-ADMIN';
 // ⬆⬆⬆
+
+// Azioni permesse con il codice operatore; tutte le altre richiedono il codice amministratore
+const AZIONI_OPERATORE = ['alunni', 'crea'];
+function autorizzato_(pin, azione) {
+  if (PIN_ADMIN && pin === PIN_ADMIN) return true;
+  return pin === PIN && AZIONI_OPERATORE.indexOf(azione) >= 0;
+}
+function erroreCodice_(azione) {
+  return { ok: false, errore: AZIONI_OPERATORE.indexOf(azione) >= 0 ? 'Codice operatore errato' : 'Codice amministratore errato' };
+}
 
 const FOGLIO = 'Cartelle';
 const INTESTAZIONE = ['Data', 'Codice cartella', 'Nome', 'Cognome', 'Classe', 'Indirizzo'];
@@ -42,7 +55,7 @@ function righe_() {
 function doGet(e) {
   const p = (e && e.parameter) || {};
   if (p.azione === 'prova') return risposta_({ ok: true, messaggio: 'Tombola Moro: script attivo' });
-  if (p.pin !== PIN) return risposta_({ ok: false, errore: 'Codice operatore errato' });
+  if (!autorizzato_(p.pin, p.azione)) return risposta_(erroreCodice_(p.azione));
   if (p.azione === 'elenco') return risposta_({ ok: true, cartelle: righe_() });
   if (p.azione === 'alunni') return risposta_({ ok: true, alunni: alunni_() });
   return risposta_({ ok: false, errore: 'Azione sconosciuta' });
@@ -51,7 +64,7 @@ function doGet(e) {
 function doPost(e) {
   let d;
   try { d = JSON.parse(e.postData.contents); } catch (err) { return risposta_({ ok: false, errore: 'Richiesta non valida' }); }
-  if (d.pin !== PIN) return risposta_({ ok: false, errore: 'Codice operatore errato' });
+  if (!autorizzato_(d.pin, d.azione)) return risposta_(erroreCodice_(d.azione));
 
   const lock = LockService.getScriptLock();
   lock.waitLock(20000);
